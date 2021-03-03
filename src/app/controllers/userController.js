@@ -29,7 +29,7 @@ exports.signUp = async function (req, res) {
 
     if (!password) return res.json({isSuccess: false, code: 2003, message: "비밀번호를 입력 해주세요"});
 
-    if (password.length < 7 || password.length > 20) return res.json({
+    if (password.length < 8 || password.length > 20) return res.json({
         isSuccess: false,
         code: 2004,
         message: "비밀번호는 8자 이상 20자 이하로 입력해주세요"
