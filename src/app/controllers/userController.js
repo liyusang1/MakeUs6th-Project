@@ -29,10 +29,10 @@ exports.signUp = async function (req, res) {
 
     if (!password) return res.json({isSuccess: false, code: 2003, message: "비밀번호를 입력 해주세요"});
 
-    if (password.length < 6 || password.length > 20) return res.json({
+    if (password.length < 7 || password.length > 20) return res.json({
         isSuccess: false,
         code: 2004,
-        message: "비밀번호는 7자 이상 20자 이하로 입력해주세요"
+        message: "비밀번호는 8자 이상 20자 이하로 입력해주세요"
     });
 
     if (!passwordCheck) return res.json({isSuccess: false, code: 2005, message: "비밀번호를 한번 더 입력해주세요"});
@@ -47,6 +47,15 @@ exports.signUp = async function (req, res) {
       code: 2008,
       message: "닉네임은 한글만 입력가능하고 2자 이상 8자 이하 이어야 합니다",
     });
+
+    var specialPattern = /[`~!@#$%^&*|\'";:?]/gi;
+
+    if (nickname.search(/\s/) != -1 ||specialPattern.test(nickname) == true )
+    return res.json({
+        isSuccess: false,
+        code: 2009,
+        message: "닉네임에는 공백 또는 특수문자를 입력할 수 없습니다.",
+      });
 
         try {
             // 이메일 중복 확인
