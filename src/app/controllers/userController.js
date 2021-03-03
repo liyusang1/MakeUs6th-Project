@@ -10,8 +10,7 @@ const userDao = require('../dao/userDao');
 const { constants } = require('buffer');
 
 
- //회원가입 API
- 
+//회원가입 API
 exports.signUp = async function (req, res) {
     const {
         email, password,passwordCheck,nickname
@@ -48,6 +47,7 @@ exports.signUp = async function (req, res) {
       message: "닉네임은 한글만 입력가능하고 2자 이상 8자 이하 이어야 합니다",
     });
 
+    //특수문자 또는 공백 Validation
     var specialPattern = /[`~!@#$%^&*|\'";:?]/gi;
 
     if (nickname.search(/\s/) != -1 ||specialPattern.test(nickname) == true )
