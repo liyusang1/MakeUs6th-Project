@@ -48,9 +48,10 @@ exports.signUp = async function (req, res) {
     });
 
     //특수문자 또는 공백 Validation
-    var specialPattern = /[`~!@#$%^&*|\'";:?]/gi;
+    var specialPattern = /[`~!@#$%^&*|\\\'\";:\/?]/gi;
+    var checkSpc = /[~!@#$%^&*()_+|<>?:{}]/gi;
 
-    if (nickname.search(/\s/) != -1 ||specialPattern.test(nickname) == true )
+    if (nickname.search(/\s/) != -1 ||specialPattern.test(nickname) == true ||checkSpc.test(nickname) ==true )
     return res.json({
         isSuccess: false,
         code: 2009,
