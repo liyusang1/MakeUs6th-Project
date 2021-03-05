@@ -1,11 +1,11 @@
 const { pool } = require("../../../config/database");
 
-// Signup
+// 로그인 이메일 체크
 async function userEmailCheck(email) {
   const connection = await pool.getConnection(async (conn) => conn);
   const selectEmailQuery = `
                 SELECT email, nickname 
-                FROM UserInfo 
+                FROM Users 
                 WHERE email = ?;
                 `;
   const selectEmailParams = [email];
@@ -18,11 +18,12 @@ async function userEmailCheck(email) {
   return emailRows;
 }
 
+//닉네임 중복 체크
 async function userNicknameCheck(nickname) {
   const connection = await pool.getConnection(async (conn) => conn);
   const selectNicknameQuery = `
                 SELECT email, nickname 
-                FROM UserInfo 
+                FROM Users 
                 WHERE nickname = ?;
                 `;
   const selectNicknameParams = [nickname];
@@ -34,10 +35,11 @@ async function userNicknameCheck(nickname) {
   return nicknameRows;
 }
 
+//유저정보 insert query
 async function insertUserInfo(insertUserInfoParams) {
   const connection = await pool.getConnection(async (conn) => conn);
   const insertUserInfoQuery = `
-        INSERT INTO UserInfo(email, pswd, nickname)
+        INSERT INTO Users(email, password, nickname)
         VALUES (?, ?, ?);
     `;
   const insertUserInfoRow = await connection.query(
@@ -48,12 +50,12 @@ async function insertUserInfo(insertUserInfoParams) {
   return insertUserInfoRow;
 }
 
-//SignIn
+//로그인
 async function selectUserInfo(email) {
   const connection = await pool.getConnection(async (conn) => conn);
   const selectUserInfoQuery = `
-                SELECT id, email , pswd, nickname, status 
-                FROM UserInfo 
+                SELECT userIdx, email , password, nickname, status 
+                FROM Users
                 WHERE email = ?;
                 `;
 

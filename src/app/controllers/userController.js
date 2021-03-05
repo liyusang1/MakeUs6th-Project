@@ -9,37 +9,55 @@ const secret_config = require('../../../config/secret');
 const userDao = require('../dao/userDao');
 const { constants } = require('buffer');
 
-/**
- update : 2020.10.4
- 01.signUp API = 회원가입
- */
+
+//회원가입 API
 exports.signUp = async function (req, res) {
     const {
-        email, password, nickname
+        email, password,passwordCheck,nickname
     } = req.body;
 
-    if (!email) return res.json({isSuccess: false, code: 301, message: "이메일을 입력해주세요."});
+    if (!email) return res.json({isSuccess: false, code: 2000, message: "이메일을 입력해주세요"});
+
     if (email.length > 30) return res.json({
         isSuccess: false,
-        code: 302,
-        message: "이메일은 30자리 미만으로 입력해주세요."
+        code: 2001,
+        message: "이메일은 30자리 미만으로 입력해주세요"
     });
 
-    if (!regexEmail.test(email)) return res.json({isSuccess: false, code: 303, message: "이메일을 형식을 정확하게 입력해주세요."});
+    if (!regexEmail.test(email)) return res.json({isSuccess: false, code: 2002, message: "이메일을 형식을 정확하게 입력해주세요"});
 
-    if (!password) return res.json({isSuccess: false, code: 304, message: "비밀번호를 입력 해주세요."});
-    if (password.length < 6 || password.length > 20) return res.json({
+    if (!password) return res.json({isSuccess: false, code: 2003, message: "비밀번호를 입력 해주세요"});
+
+    if (password.length < 8 || password.length > 20) return res.json({
         isSuccess: false,
-        code: 305,
-        message: "비밀번호는 6~20자리를 입력해주세요."
+        code: 2004,
+        message: "비밀번호는 8자 이상 20자 이하로 입력해주세요"
     });
 
-    if (!nickname) return res.json({isSuccess: false, code: 306, message: "닉네임을 입력 해주세요."});
-    if (nickname.length > 20) return res.json({
-        isSuccess: false,
-        code: 307,
-        message: "닉네임은 최대 20자리를 입력해주세요."
+    if (!passwordCheck) return res.json({isSuccess: false, code: 2005, message: "비밀번호를 한번 더 입력해주세요"});
+
+    if (passwordCheck !== password) return res.json({isSuccess: false, code: 2006, message: "비밀번호가 맞지 않습니다"});
+
+    if (!nickname) return res.json({isSuccess: false, code: 2007, message: "닉네임을 입력 해주세요"});
+
+    if (!/^([ㄱ-ㅎ|ㅏ-ㅣ|가-힣]).{1,8}$/.test(nickname))
+    return res.json({
+      isSuccess: false,
+      code: 2008,
+      message: "닉네임은 한글만 입력가능하고 2자 이상 8자 이하 이어야 합니다",
     });
+
+    //특수문자 또는 공백 Validation
+    var specialPattern = /[`~!@#$%^&*|\\\'\";:\/?]/gi;
+    var checkSpc = /[~!@#$%^&*()_+|<>?:{}]/gi;
+
+    if (nickname.search(/\s/) != -1 ||specialPattern.test(nickname) == true ||checkSpc.test(nickname) ==true )
+    return res.json({
+        isSuccess: false,
+        code: 2009,
+        message: "닉네임에는 공백 또는 특수문자를 입력할 수 없습니다.",
+      });
+
         try {
             // 이메일 중복 확인
             const emailRows = await userDao.userEmailCheck(email);
@@ -47,8 +65,8 @@ exports.signUp = async function (req, res) {
 
                 return res.json({
                     isSuccess: false,
-                    code: 308,
-                    message: "중복된 이메일입니다."
+                    code: 3000,
+                    message: "사용 불가능한 이메일입니다"
                 });
             }
 
@@ -57,91 +75,79 @@ exports.signUp = async function (req, res) {
             if (nicknameRows.length > 0) {
                 return res.json({
                     isSuccess: false,
-                    code: 309,
-                    message: "중복된 닉네임입니다."
+                    code: 3001,
+                    message: "이미 사용중인 닉네임입니다"
                 });
             }
 
-            // TRANSACTION : advanced
-           // await connection.beginTransaction(); // START TRANSACTION
             const hashedPassword = await crypto.createHash('sha512').update(password).digest('hex');
             const insertUserInfoParams = [email, hashedPassword, nickname];
             
             const insertUserRows = await userDao.insertUserInfo(insertUserInfoParams);
 
-          //  await connection.commit(); // COMMIT
-           // connection.release();
             return res.json({
                 isSuccess: true,
-                code: 200,
+                code: 1000,
                 message: "회원가입 성공"
             });
         } catch (err) {
-           // await connection.rollback(); // ROLLBACK
-           // connection.release();
             logger.error(`App - SignUp Query error\n: ${err.message}`);
-            return res.status(500).send(`Error: ${err.message}`);
+            return res.status(2010).send(`Error: ${err.message}`);
         }
 };
 
-/**
- update : 2020.10.4
- 02.signIn API = 로그인
- **/
+//로그인
 exports.signIn = async function (req, res) {
     const {
         email, password
     } = req.body;
 
-    if (!email) return res.json({isSuccess: false, code: 301, message: "이메일을 입력해주세요."});
+    if (!email) return res.json({isSuccess: false, code: 2000, message: "이메일을 입력해주세요."});
+
     if (email.length > 30) return res.json({
         isSuccess: false,
-        code: 302,
+        code: 2001,
         message: "이메일은 30자리 미만으로 입력해주세요."
     });
 
-    if (!regexEmail.test(email)) return res.json({isSuccess: false, code: 303, message: "이메일을 형식을 정확하게 입력해주세요."});
+    if (!regexEmail.test(email)) return res.json({isSuccess: false, code: 2002, message: "이메일을 형식을 정확하게 입력해주세요"});
 
-    if (!password) return res.json({isSuccess: false, code: 304, message: "비밀번호를 입력 해주세요."});
+    if (!password) return res.json({isSuccess: false, code: 2003, message: "비밀번호를 입력 해주세요."});
+
         try {
             const [userInfoRows] = await userDao.selectUserInfo(email)
 
             if (userInfoRows.length < 1) {
-                connection.release();
+               
                 return res.json({
                     isSuccess: false,
-                    code: 310,
-                    message: "아이디를 확인해주세요."
+                    code: 3000,
+                    message: "존재하지 않는 아이디 입니다."
                 });
             }
 
             const hashedPassword = await crypto.createHash('sha512').update(password).digest('hex');
-            if (userInfoRows[0].pswd !== hashedPassword) {
-                connection.release();
+            if (userInfoRows[0].password !== hashedPassword) {
+            
                 return res.json({
                     isSuccess: false,
-                    code: 311,
+                    code: 3001,
                     message: "비밀번호를 확인해주세요."
                 });
             }
-            if (userInfoRows[0].status === "INACTIVE") {
-                connection.release();
+            if (userInfoRows[0].status === 0) {
+             
                 return res.json({
                     isSuccess: false,
-                    code: 312,
+                    code: 3002,
                     message: "비활성화 된 계정입니다. 고객센터에 문의해주세요."
                 });
-            } else if (userInfoRows[0].status === "DELETED") {
-                connection.release();
-                return res.json({
-                    isSuccess: false,
-                    code: 313,
-                    message: "탈퇴 된 계정입니다. 고객센터에 문의해주세요."
-                });
-            }
+            } 
             //토큰 생성
             let token = await jwt.sign({
-                    id: userInfoRows[0].id,
+                    userIdx: userInfoRows[0].userIdx,
+                    nickname: userInfoRows[0].nickname,
+                    email: userInfoRows[0].email,
                 }, // 토큰의 내용(payload)
                 secret_config.jwtsecret, // 비밀 키
                 {
@@ -151,29 +157,23 @@ exports.signIn = async function (req, res) {
             );
 
             res.json({
-                userInfo: userInfoRows[0],
                 jwt: token,
                 isSuccess: true,
-                code: 200,
-                message: "로그인 성공"
+                code: 1000,
+                message: "로그인 성공 : "+userInfoRows[0].nickname
             });
-
-            connection.release();
+            
         } catch (err) {
             logger.error(`App - SignIn Query error\n: ${JSON.stringify(err)}`);
-            connection.release();
-            return false;
+            return res.status(2010).send(`Error: ${err.message}`);
         }
 };
 
-/**
- update : 2019.09.23
- 03.check API = token 검증
- **/
+// 토큰 검증
 exports.check = async function (req, res) {
     res.json({
         isSuccess: true,
-        code: 200,
+        code: 1000,
         message: "검증 성공",
         info: req.verifiedToken
     })
