@@ -180,3 +180,42 @@ exports.check = async function (req, res) {
         info: req.verifiedToken
     })
 };
+
+//이메일check API
+exports.checkEmail = async function (req, res) {
+    const {
+        email
+    } = req.body;
+
+    if (!email) return res.json({isSuccess: false, code: 2000, message: "이메일을 입력해주세요"});
+
+    if (email.length > 30) return res.json({
+        isSuccess: false,
+        code: 2001,
+        message: "이메일은 30자리 미만으로 입력해주세요"
+    });
+
+    if (!regexEmail.test(email)) return res.json({isSuccess: false, code: 2002, message: "이메일을 형식을 정확하게 입력해주세요"});
+
+        try {
+            // 이메일 중복 확인
+            const emailRows = await userDao.userEmailCheck(email);
+            if (emailRows.length > 0) {
+
+                return res.json({
+                    isSuccess: false,
+                    code: 3000,
+                    message: "사용 불가능한 이메일입니다"
+                });
+            }
+
+            return res.json({
+                isSuccess: true,
+                code: 1000,
+                message: email+"은 사용가능한 이메일 입니다."
+            });
+        } catch (err) {
+            logger.error(`App - SignUp Query error\n: ${err.message}`);
+            return res.status(2010).send(`Error: ${err.message}`);
+        }
+};
