@@ -136,12 +136,74 @@ async function getBookstoreDetail(bookstoreDetailParams) {
   return getBookstoreDetailRows;
 }
 
+//DB에서 북마크 체크
+async function getBookmarkCheck(bookmarkParams) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const getBookmarkCheckQuery = `
+
+  select status from StoreBookMark where userIdx=? and bookstoreIdx=?;
+
+                `;
+
+  const [getBookmarkCheckRows] = await connection.query(
+    getBookmarkCheckQuery,
+    bookmarkParams
+  );
+  connection.release();
+
+  return getBookmarkCheckRows;
+}
+
+
+//DB에 북마크 새로 생성 쿼리
+async function postBookmark(bookmarkParams) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const postBookmarkQuery = `
+
+  -- 북마크 생성
+  insert into StoreBookMark(userIdx,bookstoreIdx,status)
+  values (?,?,1);
+                `;
+
+  const [postBookmarkRows] = await connection.query(
+    postBookmarkQuery,
+    bookmarkParams
+  );
+  connection.release();
+
+  return postBookmarkRows;
+}
+
+//북마크 상태 수정 쿼리
+async function patchBookmark(bookmarkParams) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const patchBookmarkQuery = `
+
+  -- 북마크 상태 수정
+  update StoreBookMark
+  SET status= if(status = 1, 0, 1)
+  where userIdx = ? and bookstoreIdx = ?;
+
+                `;
+
+  const [patchBookmarkRows] = await connection.query(
+    patchBookmarkQuery,
+    bookmarkParams
+  );
+  connection.release();
+
+  return patchBookmarkRows;
+}
+
 module.exports = {
   getAllBookstoreInfo,
   getSpecificBookstoreInfo,
   bookstoreIdxCheck,
   getBookstoreImages,
-  getBookstoreDetail
+  getBookstoreDetail,
+  getBookmarkCheck,
+  postBookmark,
+  patchBookmark
 };
 
 

@@ -192,3 +192,82 @@ exports.bookstoreDetail = async function (req, res) {
       return res.status(500).send(`Error: ${err.message}`);
     }
   }
+
+//서점 북마크 상태 수정
+exports.bookmarkBookstore = async function (req, res) {
+    
+  //페이징 쿼리스트링으로 받음
+  const { bookstoreIdx } = req.params;
+
+  //유저인덱스
+  const {userIdx} = req.verifiedToken;
+    
+    if (!/^([0-9]).{0,10}$/.test(bookstoreIdx))
+    return res.json({
+      isSuccess: false,
+      code: 2001,
+      message: "bookstoreIdx는 숫자로 입력해야 합니다.",
+    });
+
+    //북마크 하고자 하는 서점이 유효한 서점인지 체크
+    const bookstoreIdxCheckRows = await bookstoreDao.bookstoreIdxCheck(bookstoreIdx)
+    if (bookstoreIdxCheckRows.length == 0) 
+      return res.json({
+        isSuccess: false,
+        code: 3001,
+        message: "해당하는 인덱스의 서점이 존재하지 않습니다.",
+      });
+
+    try {
+
+      const bookmarkParams = [userIdx,bookstoreIdx];
+
+      //북마크 DB 체크
+      const bookmarkCheckRows = await bookstoreDao.getBookmarkCheck(bookmarkParams)
+
+      //만약 북마크가 등록되어 있지 않다면 북마크를 status값을 1로 DB에 새로 생성
+      if(bookmarkCheckRows.length == 0){
+
+        const postBookmarkRows = await bookstoreDao.postBookmark(bookmarkParams)
+        return res.json({
+          isSuccess: true,
+          code: 1000,
+          message: "북마크 생성 완료",
+        });
+      }
+
+      //이미 등록되어 있는 경우라면 북마크 상태값을 0또는 1로 값에 따라 변경 
+      else{
+
+        const patchBookmarkRows = await bookstoreDao.patchBookmark(bookmarkParams)
+
+         if(bookmarkCheckRows[0].status == 0){
+           return res.json({
+           isSuccess: true,
+           code: 1001,
+           message: "북마크 ON",
+         });
+       }
+
+         else if(bookmarkCheckRows[0].status == 1){
+          return res.json({
+          isSuccess: true,
+          code: 1002,
+          message: "북마크 OFF",
+         });
+       }     
+
+      }
+      return res.json({
+        isSuccess: false,
+        code: 3000,
+        message: "에러 발생.",
+      });
+
+    } catch (err) {
+      // await connection.rollback(); // ROLLBACK
+      // connection.release();
+      logger.error(`App - SignUp Query error\n: ${err.message}`);
+      return res.status(500).send(`Error: ${err.message}`);
+    }
+  }
