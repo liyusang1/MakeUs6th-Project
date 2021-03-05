@@ -71,10 +71,19 @@ exports.getbookroom = async function (req, res) {
 
 // 4. 책방 검색
 exports.searchbookroom = async function (req, res) {
-    var bookName = req.query.bookName;
-    try {
+   const {bookName} = req.query;
 
-        const [searchbookroomRow] = await bookroomDao.searchbookroom(bookName)
+   //원하는 값이 안들어올 경우 에러 처리 해주세요
+   if (!bookName)
+    return res.json({
+      isSuccess: false,
+      code: 2001,
+      message: "bookName을 입력해주세요.",
+    });
+
+    try {
+        
+        const searchbookroomRow = await bookroomDao.searchbookroom(bookName)
 
         if (searchbookroomRow) {
             return res.json({

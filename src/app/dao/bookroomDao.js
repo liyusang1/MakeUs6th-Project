@@ -42,10 +42,9 @@ async function searchbookroom(bookName) {
     where bookName like concat('%',?,'%');
     `;
 
-  const searchbookroomParams = [bookName];
-  const searchbookroomRow = await connection.query(
+  const [searchbookroomRow] = await connection.query(
       searchbookroomQuery,
-      searchbookroomParams
+      bookName
   );
   connection.release();
   //console.log(searchbookroomRow);

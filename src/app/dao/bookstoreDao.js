@@ -5,7 +5,7 @@ async function getAllBookstoreInfo(pagingParams) {
   const connection = await pool.getConnection(async (conn) => conn);
   const getAllBookstoreInfoQuery = `
 
-  select storeName,location,
+  select Bookstore.bookstoreIdx,storeName,location,
   ifnull(storeImageUrl,-1) as storeImgUrl
 
      from Bookstore
@@ -35,7 +35,7 @@ async function getSpecificBookstoreInfo(bookstoreInfoParams) {
   const connection = await pool.getConnection(async (conn) => conn);
   const getSpecificBookstoreInfoQuery = `
 
-  select storeName,location,
+  select Bookstore.bookstoreIdx,storeName,location,
     ifnull(storeImageUrl,-1) as storeImgUrl
 
        from Bookstore
