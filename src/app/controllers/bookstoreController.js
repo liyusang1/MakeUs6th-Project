@@ -1,3 +1,4 @@
+const { flags } = require('regex-email');
 const {pool} = require('../../../config/database');
 const {logger} = require('../../../config/winston');
 
@@ -128,12 +129,65 @@ exports.getBookstore = async function (req, res) {
         });
       }
       return res.json({
-        isSuccess: true,
+        isSuccess: false,
         code: 3000,
         message: "에러 발생.",
       });
     } catch (err) {
     
+      logger.error(`App - SignUp Query error\n: ${err.message}`);
+      return res.status(500).send(`Error: ${err.message}`);
+    }
+  }
+
+//서점 상세조회
+exports.bookstoreDetail = async function (req, res) {
+    
+  //페이징 쿼리스트링으로 받음
+  const { bookstoreIdx } = req.params;
+
+  //유저인덱스
+  const {userIdx} = req.verifiedToken;
+    
+    if (!/^([0-9]).{0,10}$/.test(bookstoreIdx))
+    return res.json({
+      isSuccess: false,
+      code: 2001,
+      message: "bookstoreIdx는 숫자로 입력해야 합니다.",
+    });
+
+    const bookstoreIdxCheckRows = await bookstoreDao.bookstoreIdxCheck(bookstoreIdx)
+    if (bookstoreIdxCheckRows.length == 0) 
+      return res.json({
+        isSuccess: false,
+        code: 3001,
+        message: "해당하는 인덱스의 서점이 존재하지 않습니다.",
+      });
+
+    try {
+      //서점 이미지
+      const bookstoreImagesRows = await bookstoreDao.getBookstoreImages(bookstoreIdx)
+
+      //서점 상세 정보
+      const bookstoreDetailParams = [userIdx,bookstoreIdx];
+      const bookstoreDetailRows = await bookstoreDao.getBookstoreDetail(bookstoreDetailParams)
+  
+      if ( (bookstoreImagesRows.length >= 0) && (bookstoreDetailRows.length >=0) ) {
+        return res.json({
+          isSuccess: true,
+          code: 1000,
+          message: "서점 조회 성공",
+          result: {images:bookstoreImagesRows,bookStoreInfo:bookstoreDetailRows}
+        });
+      }
+      return res.json({
+        isSuccess: false,
+        code: 3000,
+        message: "에러 발생.",
+      });
+    } catch (err) {
+      // await connection.rollback(); // ROLLBACK
+      // connection.release();
       logger.error(`App - SignUp Query error\n: ${err.message}`);
       return res.status(500).send(`Error: ${err.message}`);
     }

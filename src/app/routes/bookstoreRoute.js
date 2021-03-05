@@ -5,4 +5,7 @@ module.exports = function(app){
     app.get('/bookstores/all',bookstore.getAllBookstore);
 
     app.get('/bookstores',bookstore.getBookstore);
+
+    app.get('/bookstores/:bookstoreIdx',jwtMiddleware,bookstore.bookstoreDetail);
+
 };
