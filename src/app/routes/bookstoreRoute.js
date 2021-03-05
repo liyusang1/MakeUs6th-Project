@@ -3,4 +3,6 @@ module.exports = function(app){
     const jwtMiddleware = require('../../../config/jwtMiddleware');
 
     app.get('/bookstores/all',bookstore.getAllBookstore);
+
+    app.get('/bookstores',bookstore.getBookstore);
 };

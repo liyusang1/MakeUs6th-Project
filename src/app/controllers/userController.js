@@ -40,7 +40,9 @@ exports.signUp = async function (req, res) {
 
     if (!nickname) return res.json({isSuccess: false, code: 2007, message: "닉네임을 입력 해주세요"});
 
-    if (!/^([ㄱ-ㅎ|ㅏ-ㅣ|가-힣]).{1,8}$/.test(nickname))
+    var englishCheck = /[a-zA-Z]/gi;
+
+    if (!/^([가-힣]).{1,8}$/.test(nickname) || englishCheck.test(nickname))
     return res.json({
       isSuccess: false,
       code: 2008,
