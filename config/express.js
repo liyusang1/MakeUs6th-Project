@@ -19,7 +19,7 @@ module.exports = function () {
     /* App (Android, iOS) */
     require('../src/app/routes/indexRoute')(app);
     require('../src/app/routes/userRoute')(app);
-
+    require('../src/app/routes/bookroomRoute')(app);
     /* Web */
     // require('../src/web/routes/indexRoute')(app);
 
