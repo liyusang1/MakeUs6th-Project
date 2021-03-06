@@ -185,7 +185,7 @@ exports.check = async function (req, res) {
 exports.checkEmail = async function (req, res) {
     const {
         email
-    } = req.body;
+    } = req.query;
 
     if (!email) return res.json({isSuccess: false, code: 2000, message: "이메일을 입력해주세요"});
 
