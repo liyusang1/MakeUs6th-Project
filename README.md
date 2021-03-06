@@ -17,16 +17,12 @@
 
 <img src="https://firebasestorage.googleapis.com/v0/b/mangoplate-a1a46.appspot.com/o/4%ED%8C%80_%EB%AD%90%EA%B0%80%EC%9E%88%EC%A1%B0_5%EC%B0%A8%EC%84%B8%EC%85%98_page-0001.jpg?alt=media&token=2b002fc4-5fd8-4cf7-bbbb-330385319da1" >
 
-<img src="https://firebasestorage.googleapis.com/v0/b/mangoplate-a1a46.appspot.com/o/4%ED%8C%80_%EB%AD%90%EA%B0%80%EC%9E%88%EC%A1%B0_5%EC%B0%A8%EC%84%B8%EC%85%98_page-0002.jpg?alt=media&token=b054f8c7-fa26-4468-903b-5ca0ed17a775
-" >
+<img src="https://firebasestorage.googleapis.com/v0/b/mangoplate-a1a46.appspot.com/o/4%ED%8C%80_%EB%AD%90%EA%B0%80%EC%9E%88%EC%A1%B0_5%EC%B0%A8%EC%84%B8%EC%85%98_page-0002.jpg?alt=media&token=b054f8c7-fa26-4468-903b-5ca0ed17a775" >
 
-<img src="https://firebasestorage.googleapis.com/v0/b/mangoplate-a1a46.appspot.com/o/4%ED%8C%80_%EB%AD%90%EA%B0%80%EC%9E%88%EC%A1%B0_5%EC%B0%A8%EC%84%B8%EC%85%98_page-0003.jpg?alt=media&token=8658c1ef-426c-4545-9bc0-437a761e5136
-" >
+<img src="https://firebasestorage.googleapis.com/v0/b/mangoplate-a1a46.appspot.com/o/4%ED%8C%80_%EB%AD%90%EA%B0%80%EC%9E%88%EC%A1%B0_5%EC%B0%A8%EC%84%B8%EC%85%98_page-0003.jpg?alt=media&token=8658c1ef-426c-4545-9bc0-437a761e5136" >
 
-<img src="https://firebasestorage.googleapis.com/v0/b/mangoplate-a1a46.appspot.com/o/4%ED%8C%80_%EB%AD%90%EA%B0%80%EC%9E%88%EC%A1%B0_5%EC%B0%A8%EC%84%B8%EC%85%98_page-0004.jpg?alt=media&token=887b27ce-bd4e-43b6-82df-637f58567291
-" >
+<img src="https://firebasestorage.googleapis.com/v0/b/mangoplate-a1a46.appspot.com/o/4%ED%8C%80_%EB%AD%90%EA%B0%80%EC%9E%88%EC%A1%B0_5%EC%B0%A8%EC%84%B8%EC%85%98_page-0004.jpg?alt=media&token=887b27ce-bd4e-43b6-82df-637f58567291" >
 
-<img src="https://firebasestorage.googleapis.com/v0/b/mangoplate-a1a46.appspot.com/o/4%ED%8C%80_%EB%AD%90%EA%B0%80%EC%9E%88%EC%A1%B0_5%EC%B0%A8%EC%84%B8%EC%85%98_page-0006.jpg?alt=media&token=f921dc1d-50aa-4c4e-9e88-7f3314633ea5
-" >
+<img src="https://firebasestorage.googleapis.com/v0/b/mangoplate-a1a46.appspot.com/o/4%ED%8C%80_%EB%AD%90%EA%B0%80%EC%9E%88%EC%A1%B0_5%EC%B0%A8%EC%84%B8%EC%85%98_page-0006.jpg?alt=media&token=f921dc1d-50aa-4c4e-9e88-7f3314633ea5" >
 
 
