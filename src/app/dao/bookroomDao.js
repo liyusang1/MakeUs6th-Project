@@ -40,12 +40,11 @@ async function searchbookroom(bookName) {
     select Book.bookIdx, bookImgUrl, bookName, authorName
     from Book
     where bookName like concat('%',?,'%');
-    `;
+  `;
 
-  const searchbookroomParams = [bookName];
-  const searchbookroomRow = await connection.query(
+  const [searchbookroomRow] = await connection.query(
       searchbookroomQuery,
-      searchbookroomParams
+      bookName
   );
   connection.release();
   //console.log(searchbookroomRow);
@@ -73,9 +72,90 @@ async function selectbookcontents(bookIdx) {
   return selectbookcontentsRow;
 }
 
+
+// . 글 수정
+async function updatecontents(contentsIdx,userIdx,bookIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const updatecontentsQuery = `
+    update Community
+    set contents=?
+    where userIdx =? and bookIdx =?;
+    `;
+  const updatecontentsParams = [contentsIdx,userIdx,bookIdx];
+  const updatecontentsRow = await connection.query(
+      updatecontentsQuery,
+      updatecontentsParams
+  );
+  connection.release();
+  return updatecontentsRow;
+}
+
+
+// . 글 삭제
+async function deletecontents(bookIdx,userIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const deletecontentsQuery = `
+    delete from Community
+    where bookIdx = ? and userIdx =?;
+    `;
+  const deletecontentsParams = [bookIdx,userIdx];
+  const deletecontentsRow = await connection.query(
+      deletecontentsQuery,
+      deletecontentsParams
+  );
+  connection.release();
+  return deletecontentsRow;
+}
+
+// . 본문 검색 - 내용
+async function searchcontents(bookIdx,contents) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const searchcontentsQuery = `
+    select contentsIdx, bookIdx, Community.userIdx,userimgUrl, nickname,
+           date_format(Community.createdAt,'%Y.%m.%d') as createdAt, contents
+    from Community
+           inner join Users on Users.userIdx = Community.userIdx
+    where bookIdx=? and contents like concat('%',?,'%');
+    `;
+
+  const searchcontentsParams = [bookIdx,contents];
+  const [searchcontentsRow] = await connection.query(
+      searchcontentsQuery,
+      searchcontentsParams
+  );
+  connection.release();
+  return searchcontentsRow;
+}
+
+// . 본문 검색 - 내용 - Validation Check
+async function checkContents(bookIdx,contents) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const checkContentsQuery = `
+    select exists( select contentsIdx, bookIdx, Community.userIdx, contents
+                   from Community
+                          inner join Users on Users.userIdx = Community.userIdx
+                   where bookIdx=? and contents like concat('%',?,'%')) as checkcontents
+    `;
+
+  const checkContentsParams = [bookIdx,contents];
+  const [checkContentsRow] = await connection.query(
+      checkContentsQuery,
+      checkContentsParams
+  );
+  connection.release();
+  return checkContentsRow[0]['checkcontents'];
+}
+
+
+
+
 module.exports = {
   insertbookroom, // 1. 책방 만들기
   selectbookroom, // 2. 책방 리스트 조회
   searchbookroom, // 4. 책방 검색
-  selectbookcontents // 6. 글 조회 - 최신순
+  selectbookcontents, // 6. 글 조회 - 최신순
+  updatecontents, // 글 수정
+  deletecontents, // 글 삭제
+  searchcontents, // 본문 내용 검색
+  checkContents // 본문 내용 검색 - Validation check
 };
