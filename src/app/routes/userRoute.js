@@ -10,4 +10,7 @@ module.exports = function(app){
 
     //이메일 중복검사
     app.get('/check-email',user.checkEmail);
+
+    //마이 페이지
+    app.get('/users',jwtMiddleware,user.myPage);
 };

@@ -219,3 +219,44 @@ exports.checkEmail = async function (req, res) {
             return res.status(2010).send(`Error: ${err.message}`);
         }
 };
+
+//마이페이지
+exports.myPage = async function (req, res) {
+
+   //유저인덱스
+   const {userIdx} = req.verifiedToken;
+  
+        try {
+          //사용자정보 가져오기
+          const [userInfoRows] = await userDao.getUserInfo(userIdx);
+
+          //마이페이스 내가 쓴 글
+          const userWritingRows = await userDao.getUserWriting(userIdx);
+
+          //마이페이스 내가 북마크 한 글
+          const userBookmarkWritingRows = await userDao.getUserBookmarkWritingRows(userIdx);
+
+          //마이페이스 내가 북마크 한 서점
+          const userBookmarkBookstoreRows = await userDao.getUserBookmarkBookstore(userIdx);
+
+          if(userInfoRows.length >= 0 && userWritingRows.length >=0 && 
+             userBookmarkWritingRows.length >= 0 && userBookmarkBookstoreRows.length >=0)
+            return res.json({
+                isSuccess: true,
+                code: 1000,
+                message: userInfoRows[0].nickname+"님의 마이페이지 조회 성공",
+                result: 
+                {info:userInfoRows,writing:userWritingRows,
+                 writingBookmark:userBookmarkWritingRows,bookstoreBookmark:userBookmarkBookstoreRows}
+            });
+
+            return res.json({
+                isSuccess: false,
+                code: 3000,
+                message: "에러 발생"
+            });
+        } catch (err) {
+            logger.error(`App - SignUp Query error\n: ${err.message}`);
+            return res.status(2010).send(`Error: ${err.message}`);
+        }
+};
