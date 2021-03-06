@@ -157,6 +157,26 @@ async function getUserBookmarkBookstore(userIdx) {
   return [getUserBookmarkBookstoreRows];
 }
 
+
+//비밀번호 변경
+async function updateUserPasswordInfo(newInfoParams) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const updateUserPasswordQuery = `
+  
+       update Users
+       set password = ? where userIdx = ?;
+
+                `;
+
+  const [updateUserPasswordRows] = await connection.query(
+    updateUserPasswordQuery,
+    newInfoParams
+  );
+  connection.release();
+  return [updateUserPasswordRows];
+}
+
+
 module.exports = {
   userEmailCheck,
   userNicknameCheck,
@@ -165,5 +185,6 @@ module.exports = {
   getUserInfo,
   getUserWriting,
   getUserBookmarkWritingRows,
-  getUserBookmarkBookstore
+  getUserBookmarkBookstore,
+  updateUserPasswordInfo
 };

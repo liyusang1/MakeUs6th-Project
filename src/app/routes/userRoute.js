@@ -13,4 +13,7 @@ module.exports = function(app){
 
     //마이 페이지
     app.get('/users',jwtMiddleware,user.myPage);
+
+    //비밀번호 변경
+    app.patch('/users/password',jwtMiddleware,user.changePassword);
 };
