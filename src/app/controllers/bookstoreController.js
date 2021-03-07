@@ -143,7 +143,7 @@ exports.getBookstore = async function (req, res) {
 //서점 상세조회
 exports.bookstoreDetail = async function (req, res) {
     
-  //페이징 쿼리스트링으로 받음
+  //서점 인덱스 path variable로 받음
   const { bookstoreIdx } = req.params;
 
   //유저인덱스

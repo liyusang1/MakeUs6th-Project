@@ -157,7 +157,6 @@ async function getUserBookmarkBookstore(userIdx) {
   return [getUserBookmarkBookstoreRows];
 }
 
-
 //비밀번호 변경
 async function updateUserPasswordInfo(newInfoParams) {
   const connection = await pool.getConnection(async (conn) => conn);
@@ -176,6 +175,39 @@ async function updateUserPasswordInfo(newInfoParams) {
   return [updateUserPasswordRows];
 }
 
+//닉네임 변경
+async function updateNickname(updateNicknameParams) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const updateNicknameQuery = `
+  
+        update Users set nickname = ? where userIdx = ?
+
+                `;
+
+  const [updateNicknameRows] = await connection.query(
+    updateNicknameQuery,
+    updateNicknameParams
+  );
+  connection.release();
+  return [updateNicknameRows];
+}
+
+//프로필 이미지 변경
+async function updateImage(updateImageParams) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const updateImageQuery = `
+  
+        update Users set userImgUrl = ? where userIdx = ?;
+
+                `;
+
+  const [updateImageRows] = await connection.query(
+    updateImageQuery,
+    updateImageParams
+  );
+  connection.release();
+  return [updateImageRows];
+}
 
 module.exports = {
   userEmailCheck,
@@ -186,5 +218,7 @@ module.exports = {
   getUserWriting,
   getUserBookmarkWritingRows,
   getUserBookmarkBookstore,
-  updateUserPasswordInfo
+  updateUserPasswordInfo,
+  updateNickname,
+  updateImage
 };

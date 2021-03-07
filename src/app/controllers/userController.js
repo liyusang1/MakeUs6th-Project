@@ -325,3 +325,164 @@ exports.changePassword = async function (req, res) {
         return res.status(2010).send(`Error: ${err.message}`);
     }
 };
+
+//프로필 관리
+exports.profile = async function (req, res) {
+
+    //유저인덱스
+    const {userIdx} = req.verifiedToken;
+   
+         try {
+           //사용자정보 가져오기
+           const [userInfoRows] = await userDao.getUserInfo(userIdx);
+ 
+           if(userInfoRows.length >= 0 )
+             return res.json({
+                 isSuccess: true,
+                 code: 1000,
+                 message: userInfoRows[0].nickname+"님의 프로필 관리 조회 성공",
+                 result:userInfoRows    
+             });
+ 
+             return res.json({
+                 isSuccess: false,
+                 code: 3000,
+                 message: "에러 발생"
+             });
+         } catch (err) {
+             logger.error(`App - SignUp Query error\n: ${err.message}`);
+             return res.status(2010).send(`Error: ${err.message}`);
+         }
+ };
+
+//닉네임 변경
+exports.changeNickname = async function (req, res) {
+
+    //유저인덱스
+    const {userIdx} = req.verifiedToken;
+
+    //변경할 닉네임을 입력받음
+    const {nickname} = req.body;
+
+    if (!nickname) return res.json({isSuccess: false, code: 2000, message: "닉네임을 입력 해주세요"});
+
+    var englishCheck = /[a-zA-Z]/gi;
+
+    if (!/^([가-힣]).{1,8}$/.test(nickname) || englishCheck.test(nickname))
+    return res.json({
+      isSuccess: false,
+      code: 2001,
+      message: "닉네임은 한글만 입력가능하고 2자 이상 8자 이하 이어야 합니다",
+    });
+
+    //특수문자 또는 공백 Validation
+    var specialPattern = /[`~!@#$%^&*|\\\'\";:\/?]/gi;
+    var checkSpc = /[~!@#$%^&*()_+|<>?:{}]/gi;
+
+    if (nickname.search(/\s/) != -1 ||specialPattern.test(nickname) == true ||checkSpc.test(nickname) ==true )
+    return res.json({
+        isSuccess: false,
+        code: 2002,
+        message: "닉네임에는 공백 또는 특수문자를 입력할 수 없습니다.",
+      });
+
+         try {
+             //사용자정보 가져오기
+             const [userInfoRows] = await userDao.getUserInfo(userIdx);
+             let currentNickname = userInfoRows[0].nickname
+
+             //변경전 닉네임과 변경 후 닉네임이 같은 지 체크
+             if (currentNickname == nickname) {
+                  return res.json({
+                     isSuccess: false,
+                     code: 2003,
+                    message: "변경전 닉네임과 변경후 닉네임이 같습니다."
+                  });
+              }
+
+              // 닉네임 중복 확인
+              const nicknameRows = await userDao.userNicknameCheck(nickname);
+              if (nicknameRows.length > 0) {
+                  return res.json({
+                      isSuccess: false,
+                      code: 3001,
+                      message: "이미 사용중인 닉네임입니다"
+                  });
+              }
+
+              const updateNicknameParams = [nickname,userIdx];
+              const updateNicknameRows = await userDao.updateNickname(updateNicknameParams);
+ 
+             return res.json({
+                 isSuccess: true,
+                 code: 1000,
+                 message: currentNickname +" 에서 "+nickname+" 으로 닉네임 변경 완료"
+             });
+         } catch (err) {
+             logger.error(`App - SignUp Query error\n: ${err.message}`);
+             return res.status(2010).send(`Error: ${err.message}`);
+         }
+ };
+
+ 
+//프로필 이미지 변경
+exports.patchImage = async function (req, res) {
+
+    //유저인덱스
+    const {userIdx} = req.verifiedToken;
+
+    //변경할 이미지 url를 받음
+    const {image} = req.body;
+
+    if(!image) return res.json({
+      isSuccess: false,
+      code: 2000,
+      message: "변경할 이미지의 URL을 입력해 주세요.",
+    });
+   
+         try {
+           //이미지 업데이트
+           const updateImageParams = [image,userIdx];
+           const updateImageRows = await userDao.updateImage(updateImageParams);
+ 
+             return res.json({
+                 isSuccess: true,
+                 code: 1000,
+                 message: "프로필 이미지 변경 완료"
+             });
+         } catch (err) {
+             logger.error(`App - SignUp Query error\n: ${err.message}`);
+             return res.status(2010).send(`Error: ${err.message}`);
+         }
+ };
+
+//프로필 이미지 삭제
+exports.deleteImage = async function (req, res) {
+
+    //유저인덱스
+    const {userIdx} = req.verifiedToken;
+
+         try {
+             //사용자정보 가져오기 이미 프로필 이미지가 없다면 삭제 불가
+             const [userInfoRows] = await userDao.getUserInfo(userIdx);
+             if(userInfoRows[0].userImgUrl == -1)
+              return res.json({
+                isSuccess: false,
+                code: 3000,
+                message: "삭제할 프로필 이미지가 없습니다."
+            });
+
+             //이미지 url를 -1로 변경 
+             const updateImageParams = [-1,userIdx];
+             const updateImageRows = await userDao.updateImage(updateImageParams);
+ 
+             return res.json({
+                 isSuccess: true,
+                 code: 1000,
+                 message: "프로필 이미지 삭제 완료"
+             });
+         } catch (err) {
+             logger.error(`App - SignUp Query error\n: ${err.message}`);
+             return res.status(2010).send(`Error: ${err.message}`);
+         }
+ };
