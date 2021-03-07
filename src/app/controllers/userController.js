@@ -465,7 +465,9 @@ exports.deleteImage = async function (req, res) {
          try {
              //사용자정보 가져오기 이미 프로필 이미지가 없다면 삭제 불가
              const [userInfoRows] = await userDao.getUserInfo(userIdx);
-             if(userInfoRows[0].userImgUrl == -1)
+
+             console.log(userInfoRows[0].userImgUrl);
+             if(userInfoRows[0].userImgUrl == -1 || userInfoRows[0].userImgUrl == null)
               return res.json({
                 isSuccess: false,
                 code: 3000,
@@ -480,6 +482,27 @@ exports.deleteImage = async function (req, res) {
                  isSuccess: true,
                  code: 1000,
                  message: "프로필 이미지 삭제 완료"
+             });
+         } catch (err) {
+             logger.error(`App - SignUp Query error\n: ${err.message}`);
+             return res.status(2010).send(`Error: ${err.message}`);
+         }
+ };
+
+ //회원탈퇴
+exports.patchUserStatus = async function (req, res) {
+
+    //유저인덱스
+    const {userIdx} = req.verifiedToken;
+
+         try {
+             
+             const updateImageRows = await userDao.updateImage(updateImageParams);
+ 
+             return res.json({
+                 isSuccess: true,
+                 code: 1000,
+                 message: "회원 탈퇴 완료"
              });
          } catch (err) {
              logger.error(`App - SignUp Query error\n: ${err.message}`);

@@ -28,4 +28,7 @@ module.exports = function(app){
 
     //프로필 이미지 삭제
     app.delete('/users/image',jwtMiddleware,user.deleteImage);
+
+    //회원탈퇴
+    //app.patch('/users/status',jwtMiddleware,user.patchUserStatus);
 };
