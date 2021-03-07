@@ -466,7 +466,6 @@ exports.deleteImage = async function (req, res) {
              //사용자정보 가져오기 이미 프로필 이미지가 없다면 삭제 불가
              const [userInfoRows] = await userDao.getUserInfo(userIdx);
 
-             console.log(userInfoRows[0].userImgUrl);
              if(userInfoRows[0].userImgUrl == -1 || userInfoRows[0].userImgUrl == null)
               return res.json({
                 isSuccess: false,
@@ -497,7 +496,7 @@ exports.patchUserStatus = async function (req, res) {
 
          try {
              
-             const updateImageRows = await userDao.updateImage(updateImageParams);
+             const patchUserStatusRows = await userDao.patchUserStatus(userIdx);
  
              return res.json({
                  isSuccess: true,

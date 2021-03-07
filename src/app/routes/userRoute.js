@@ -30,5 +30,5 @@ module.exports = function(app){
     app.delete('/users/image',jwtMiddleware,user.deleteImage);
 
     //회원탈퇴
-    //app.patch('/users/status',jwtMiddleware,user.patchUserStatus);
+    app.patch('/users/status',jwtMiddleware,user.patchUserStatus);
 };

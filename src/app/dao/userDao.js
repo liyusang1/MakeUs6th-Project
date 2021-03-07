@@ -209,6 +209,23 @@ async function updateImage(updateImageParams) {
   return [updateImageRows];
 }
 
+//회원탈퇴
+async function patchUserStatus(userIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const patchUserStatusQuery = `
+  
+         update Users set status = 0 where userIdx = ?;
+
+                `;
+
+  const [patchUserStatusRows] = await connection.query(
+    patchUserStatusQuery,
+    userIdx
+  );
+  connection.release();
+  return [patchUserStatusRows];
+}
+
 module.exports = {
   userEmailCheck,
   userNicknameCheck,
@@ -220,5 +237,6 @@ module.exports = {
   getUserBookmarkBookstore,
   updateUserPasswordInfo,
   updateNickname,
-  updateImage
+  updateImage,
+  patchUserStatus
 };
