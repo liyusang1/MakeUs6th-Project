@@ -82,7 +82,6 @@ exports.searchbookroom = async function (req, res) {
         });
 
     try {
-
         const searchbookroomRow = await bookroomDao.searchbookroom(bookName)
 
         if (searchbookroomRow) {

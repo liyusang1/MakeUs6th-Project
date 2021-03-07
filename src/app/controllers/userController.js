@@ -180,3 +180,148 @@ exports.check = async function (req, res) {
         info: req.verifiedToken
     })
 };
+
+//이메일check API
+exports.checkEmail = async function (req, res) {
+    const {
+        email
+    } = req.query;
+
+    if (!email) return res.json({isSuccess: false, code: 2000, message: "이메일을 입력해주세요"});
+
+    if (email.length > 30) return res.json({
+        isSuccess: false,
+        code: 2001,
+        message: "이메일은 30자리 미만으로 입력해주세요"
+    });
+
+    if (!regexEmail.test(email)) return res.json({isSuccess: false, code: 2002, message: "이메일을 형식을 정확하게 입력해주세요"});
+
+        try {
+            // 이메일 중복 확인
+            const emailRows = await userDao.userEmailCheck(email);
+            if (emailRows.length > 0) {
+
+                return res.json({
+                    isSuccess: false,
+                    code: 3000,
+                    message: "사용 불가능한 이메일입니다"
+                });
+            }
+
+            return res.json({
+                isSuccess: true,
+                code: 1000,
+                message: email+"은 사용가능한 이메일 입니다."
+            });
+        } catch (err) {
+            logger.error(`App - SignUp Query error\n: ${err.message}`);
+            return res.status(2010).send(`Error: ${err.message}`);
+        }
+};
+
+//마이페이지
+exports.myPage = async function (req, res) {
+
+   //유저인덱스
+   const {userIdx} = req.verifiedToken;
+  
+        try {
+          //사용자정보 가져오기
+          const [userInfoRows] = await userDao.getUserInfo(userIdx);
+
+          //마이페이스 내가 쓴 글
+          const userWritingRows = await userDao.getUserWriting(userIdx);
+
+          //마이페이스 내가 북마크 한 글
+          const userBookmarkWritingRows = await userDao.getUserBookmarkWritingRows(userIdx);
+
+          //마이페이스 내가 북마크 한 서점
+          const userBookmarkBookstoreRows = await userDao.getUserBookmarkBookstore(userIdx);
+
+          if(userInfoRows.length >= 0 && userWritingRows.length >=0 && 
+             userBookmarkWritingRows.length >= 0 && userBookmarkBookstoreRows.length >=0)
+            return res.json({
+                isSuccess: true,
+                code: 1000,
+                message: userInfoRows[0].nickname+"님의 마이페이지 조회 성공",
+                result: 
+                {info:userInfoRows,writing:userWritingRows,
+                 writingBookmark:userBookmarkWritingRows,bookstoreBookmark:userBookmarkBookstoreRows}
+            });
+
+            return res.json({
+                isSuccess: false,
+                code: 3000,
+                message: "에러 발생"
+            });
+        } catch (err) {
+            logger.error(`App - SignUp Query error\n: ${err.message}`);
+            return res.status(2010).send(`Error: ${err.message}`);
+        }
+};
+
+//비밀번호변경
+exports.changePassword = async function (req, res) {
+
+    //클라이언트로 부터 현재비밀번호, 변경 비밀번호, 변경 비밀번호 확인을 입력 받음
+    const {currentPassword,newPassword,passwordCheck} = req.body;
+
+    //JWT토큰으로 부터 유저인덱스, 이메일을 받음
+    const {userIdx,email} = req.verifiedToken;
+
+    if ((!currentPassword) || (!newPassword) || (!passwordCheck) ) return res.json({
+        isSuccess: false,
+        code: 2000,
+        message: "currentPassword, newPassword, passwordCheck 를 모두 입력해 주세요."
+    });
+   
+    try {
+        const [userInfoRows] = await userDao.selectUserInfo(email)
+
+        //입력받은 비밀번호를 해시화 해서 DB와 비교, 비밀번호 검증
+        const hashedPassword = await crypto.createHash('sha512').update(currentPassword).digest('hex');
+        if (userInfoRows[0].password !== hashedPassword) {
+        
+            return res.json({
+                isSuccess: false,
+                code: 3001,
+                message: "현재 비밀번호를 확인해주세요."
+            });
+        }
+
+        if (newPassword.length < 8 || newPassword.length > 20) return res.json({
+            isSuccess: false,
+            code: 2002,
+            message: "비밀번호는 8자 이상 20자 이하로 입력해주세요"
+        });
+
+        if (newPassword!==passwordCheck) return res.json({
+            isSuccess: false,
+            code: 2001,
+            message: "두 비밀번호가 맞지 않습니다."
+        });
+        
+        //새로운 변경 비밀번호를 해시화
+        const newHashedPassword = await crypto.createHash('sha512').update(newPassword).digest('hex');
+
+        if(hashedPassword == newHashedPassword) return res.json({
+            isSuccess: false,
+            code: 2003,
+            message: "변경전 비밀번호와 변경후 비밀번호가 같습니다."
+        });
+        
+        const newInfoParams = [newHashedPassword,userIdx]; 
+        const newUserInfoRows = await userDao.updateUserPasswordInfo(newInfoParams)
+
+        return res.json({
+            isSuccess: true,
+            code: 1000,
+            message: "비밀번호 변경 성공"
+        });
+        
+    } catch (err) {
+        logger.error(`App - SignIn Query error\n: ${JSON.stringify(err)}`);
+        return res.status(2010).send(`Error: ${err.message}`);
+    }
+};

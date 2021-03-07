@@ -4,5 +4,16 @@ module.exports = function(app){
 
     app.post('/sign-up',user.signUp);
     app.post('/sign-in',user.signIn);
+
+    //JWT 토큰 검증
     app.get('/check',jwtMiddleware,user.check);
+
+    //이메일 중복검사
+    app.get('/check-email',user.checkEmail);
+
+    //마이 페이지
+    app.get('/users',jwtMiddleware,user.myPage);
+
+    //비밀번호 변경
+    app.patch('/users/password',jwtMiddleware,user.changePassword);
 };
