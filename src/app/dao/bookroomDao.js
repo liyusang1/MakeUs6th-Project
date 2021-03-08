@@ -17,19 +17,21 @@ async function insertbookroom(bookName,authorName,bookImgUrl) {
   return insertbookroomRow;
 }
 // 2. 책방 리스트 조회-최신순
-async function selectbookroom() {
+async function selectbookroom(page,limit) {
   const connection = await pool.getConnection(async (conn) => conn);
   const selectbookroomQuery = `
     select Book.bookIdx, bookImgUrl, bookName, authorName, concat(ifnull(count(Community.bookIdx),0),'개의 글') as contentsCount
     from Book
            LEFT JOIN Community on Community.bookIdx = Book.bookIdx
     group by bookIdx
-    order by Book.createdAt asc;
+    order by Book.createdAt desc
+      limit ?,?;
     `;
+  const selectbookroomParams = [Number(page),Number(limit)];
   const selectbookroomRow = await connection.query(
-      selectbookroomQuery
+      selectbookroomQuery,
+      selectbookroomParams
   );
-
   connection.release();
   return selectbookroomRow;
 }
