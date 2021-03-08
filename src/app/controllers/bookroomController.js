@@ -44,7 +44,7 @@ exports.postbookroom = async function (req, res) {
 };
 
 
-// 2. 책방 리스트 조회
+// 2. 책방 리스트 조회 - 최신순
 exports.getbookroom = async function (req, res) {
 
     try {
@@ -65,6 +65,83 @@ exports.getbookroom = async function (req, res) {
         });
     } catch (err) {
         logger.error(`App - getbookroom Query error\n: ${JSON.stringify(err)}`);
+        return false;
+    }
+};
+
+// 2. 책방 리스트 조회 - 인기순
+exports.getbookroomPopular = async function (req, res) {
+    const {page,limit} = req.query;
+
+    //페이징 validation 처리
+    // 1. page 값은 1부터 시작 ex) 1페이지
+    if (page<1)
+        return res.json({
+            isSuccess: false,
+            code: 2001,
+            message: "페이지를 1부터 입력해주세요",
+        });
+
+    // 2. limit 값은 1부터 시작
+         if (limit < 1)
+             return res.json({
+                 isSuccess: false,
+                code: 2002,
+                 message: "페이지 당 불러올 정보의 개수를 1부터 입력해주세요",
+            });
+
+
+
+    // 페이징 - 클라 쪽에서 1페이지 당 20개 출력을 원한다면 page=1,limit=20 값 입력
+    // => 서버 쪽에서는 page=0, limit=20 / page=20,limit =40 이렇게 값을 넣어줘야 원하는 결과값을 추출할 수 있기 때문에 아래와 같은 공식 처리
+    let start = page;
+    let infoCount = limit;
+
+    if (page>=1 && limit >=1 ){
+        start = 20 * (page-1);
+        infoCount = page * limit;
+    };
+
+
+
+    try {
+        const selectbookroomPopular = await bookroomDao.selectbookroomPopular(start,infoCount)
+
+        // 3. 해당 페이지 요청했을 때 값이 더이상 없는 경우(먼저 비어있는지 확인하는 함수 선언)
+        var isEmpty = function (val){
+            if (val === "" || val === null || val === undefined || (val !==null && typeof val === 'object' && !Object.keys(val).length))
+            {
+                return true
+                }
+            else{
+                return false
+            }
+        };
+
+        // 3. 해당 페이지 요청했을 때 값이 더이상 없는 경우
+        if(isEmpty(selectbookroomPopular)) {
+            return res.json({
+                isSuccess: false,
+                code: 4000,
+                message: "책방이 더 이상 존재하지 않습니다.",
+            });
+        }
+
+        if (selectbookroomPopular) {
+            return res.json({
+                result:selectbookroomPopular,
+                isSuccess: true,
+                code: 1000,
+                message: "책방 리스트 조회 인기순 성공입니다."
+            });
+        }
+        return res.json({
+            isSuccess: false,
+            code: 2000,
+            message: "책방 리스트 조회 인기순 실패입니다."
+        });
+    } catch (err) {
+        logger.error(`App - getbookroomPopular Query error\n: ${JSON.stringify(err)}`);
         return false;
     }
 };
@@ -139,7 +216,7 @@ exports.patchcontents = async function (req, res) {
     } = req.body;
 
     try {
-        const [updatecontentsRow] = await bookroomDao.updatecontents(contentsIdx,userIdx,bookIdx)
+        const [updatecontentsRow] = await bookroomDao.updatecontents(contents,contentsIdx,userIdx,bookIdx)
 
         if (updatecontentsRow) {
             return res.json({
@@ -167,7 +244,7 @@ exports.deletecontents = async function (req, res) {
     var contentsIdx = req.params['contentsIdx']
 
     try {
-        const [deletecontentsRow] = await bookroomDao.deletecontents(bookIdx,userIdx)
+        const [deletecontentsRow] = await bookroomDao.deletecontents(bookIdx,userIdx,contentsIdx)
 
         if (deletecontentsRow) {
             return res.json({

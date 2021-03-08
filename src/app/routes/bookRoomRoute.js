@@ -5,7 +5,7 @@ module.exports = function(app){
     /** 홈화면 **/
     app.post('/books',bookroom.postbookroom); //jwtMiddleware 추가하기 , 책방 만들기
     app.get('/books/newest-books',bookroom.getbookroom); //jwtMiddleware 추가하기 , 책방 리스트 조회 - 최신순
-    //app.get('/books/popularity-books', user.check); //jwtMiddleware 추가하기 , 책방 리스트 조회 - 인기순
+    app.get('/books/popularity-books', bookroom.getbookroomPopular); //jwtMiddleware 추가하기 , 책방 리스트 조회 - 인기순
     app.get('/books',bookroom.searchbookroom); //jwtMiddleware 추가하기 , 책방 검색
 
     /** 책방 입장 **/

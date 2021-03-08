@@ -16,7 +16,7 @@ async function insertbookroom(bookName,authorName,bookImgUrl) {
   connection.release();
   return insertbookroomRow;
 }
-// 2. 책방 리스트 조회
+// 2. 책방 리스트 조회-최신순
 async function selectbookroom() {
   const connection = await pool.getConnection(async (conn) => conn);
   const selectbookroomQuery = `
@@ -29,8 +29,29 @@ async function selectbookroom() {
   const selectbookroomRow = await connection.query(
       selectbookroomQuery
   );
+
   connection.release();
   return selectbookroomRow;
+}
+
+// 2. 책방 리스트 조회 - 인기순
+async function selectbookroomPopular(page,limit) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const selectbookroomPopularQuery = `
+    select Book.viewCount,Book.bookIdx, bookImgUrl, bookName, authorName, concat(ifnull(count(Community.bookIdx),0),'개의 글') as contentsCount
+    from Book
+           left JOIN Community on Community.bookIdx = Book.bookIdx
+    group by bookIdx
+    order by Book.viewCount desc
+      limit ?,?;
+  `;
+  const selectbookroomPopularParams = [Number(page),Number(limit)];
+  const [selectbookroomPopularRow] = await connection.query(
+      selectbookroomPopularQuery,
+      selectbookroomPopularParams
+  );
+  connection.release();
+  return selectbookroomPopularRow;
 }
 
 // 4. 책방검색
@@ -74,19 +95,20 @@ async function selectbookcontents(bookIdx) {
 
 
 // . 글 수정
-async function updatecontents(contentsIdx,userIdx,bookIdx) {
+async function updatecontents(contents,userIdx,bookIdx,contentsIdx,) {
   const connection = await pool.getConnection(async (conn) => conn);
   const updatecontentsQuery = `
     update Community
     set contents=?
-    where userIdx =? and bookIdx =?;
+    where userIdx =? and bookIdx =? and contentsIdx=?;
     `;
-  const updatecontentsParams = [contentsIdx,userIdx,bookIdx];
+  const updatecontentsParams = [contents,userIdx,bookIdx,contentsIdx];
   const updatecontentsRow = await connection.query(
       updatecontentsQuery,
       updatecontentsParams
   );
   connection.release();
+  console.log(updatecontentsRow);
   return updatecontentsRow;
 }
 
@@ -151,11 +173,13 @@ async function checkContents(bookIdx,contents) {
 
 module.exports = {
   insertbookroom, // 1. 책방 만들기
-  selectbookroom, // 2. 책방 리스트 조회
+  selectbookroom, // 2. 책방 리스트 조회 - 최신순
+  selectbookroomPopular, // 3. 책방 리스트 조회 - 인기순
   searchbookroom, // 4. 책방 검색
   selectbookcontents, // 6. 글 조회 - 최신순
   updatecontents, // 글 수정
   deletecontents, // 글 삭제
   searchcontents, // 본문 내용 검색
   checkContents // 본문 내용 검색 - Validation check
+
 };
