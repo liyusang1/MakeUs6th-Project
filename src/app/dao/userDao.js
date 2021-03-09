@@ -92,7 +92,7 @@ async function getUserWriting(userIdx) {
   const getUserWritingQuery = `
   
    select distinct Community.bookIdx,bookName from Community
-         left outer join Book on Community.bookIdx = Book.bookIdx
+         inner join Book on Community.bookIdx = Book.bookIdx
          where userIdx = ? and Community.status = 1 and Book.status =1;
 
                 `;
