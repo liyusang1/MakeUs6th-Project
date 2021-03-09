@@ -34,4 +34,7 @@ module.exports = function(app){
 
     //내가 쓴 글 조회
     app.get('/users-writing/books/:bookIdx',jwtMiddleware,user.getUserWriting);
+
+    //내가 북마크 한 글 조회
+    app.get('/users-bookmark/books/:bookIdx',jwtMiddleware,user.getUserBookmarkWriting);
 };

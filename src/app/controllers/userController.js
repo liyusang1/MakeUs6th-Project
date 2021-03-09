@@ -518,6 +518,13 @@ exports.getUserWriting = async function (req, res) {
     //path variable로 bookIdx받음
     const {bookIdx} = req.params;
 
+    if (!/^([0-9]).{0,10}$/.test(bookIdx))
+    return res.json({
+      isSuccess: false,
+      code: 2001,
+      message: "bookIdx는 숫자로 입력해야 합니다.",
+    });
+
          try {
              
              const checkBookIdxRows = await userDao.checkBookIdx(bookIdx);
@@ -546,7 +553,60 @@ exports.getUserWriting = async function (req, res) {
              return res.json({
                 isSuccess: false,
                 code: 4000,
-                message: "해당 인덱스 에는 내가 쓴글이 없습니다."
+                message: "해당 인덱스에는 내가 쓴글이 없습니다."
+            });
+         } catch (err) {
+             logger.error(`App - SignUp Query error\n: ${err.message}`);
+             return res.status(2010).send(`Error: ${err.message}`);
+         }
+ };
+
+
+ //내가 북마크 한 글 조회
+exports.getUserBookmarkWriting= async function (req, res) {
+
+    //유저인덱스
+    const {userIdx} = req.verifiedToken;
+
+    //path variable로 bookIdx받음
+    const {bookIdx} = req.params;
+
+    if (!/^([0-9]).{0,10}$/.test(bookIdx))
+    return res.json({
+      isSuccess: false,
+      code: 2001,
+      message: "bookIdx는 숫자로 입력해야 합니다.",
+    });
+
+         try {
+             
+             const checkBookIdxRows = await userDao.checkBookIdx(bookIdx);
+             if(checkBookIdxRows.length ==0)
+             return res.json({
+                isSuccess: false,
+                code: 2000,
+                message: "해당하는 인덱스의 책이 존재 하지 않습니다."
+            });
+
+            const getUserWritingParams = [userIdx,bookIdx];
+
+            //유저가 북마크 한 글을 가져옴
+            const getBookmarkWritingInfoRows = await userDao.getBookmarkWritingInfo(getUserWritingParams);
+            //책 이름 정보 가져옴
+            const getBookNameRows = await userDao.getBookName(bookIdx);
+ 
+            if(getBookmarkWritingInfoRows.length > 0 )
+             return res.json({
+                 isSuccess: true,
+                 code: 1000,
+                 result : {book:getBookNameRows,writing:getBookmarkWritingInfoRows},
+                 message: "내가 북마크 한 글 조회 완료"
+             });
+
+             return res.json({
+                isSuccess: false,
+                code: 4000,
+                message: "해당 인덱스에는 내가 북마크 한 글이 없습니다."
             });
          } catch (err) {
              logger.error(`App - SignUp Query error\n: ${err.message}`);
