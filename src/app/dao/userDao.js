@@ -93,7 +93,8 @@ async function getUserWriting(userIdx) {
   
    select distinct Community.bookIdx,bookName from Community
          inner join Book on Community.bookIdx = Book.bookIdx
-         where userIdx = ? and Community.status = 1 and Book.status =1;
+         where userIdx = ? and Community.status = 1 and Book.status =1
+         order by Community.updatedAt desc;
 
                 `;
 
@@ -115,7 +116,8 @@ async function getUserBookmarkWritingRows(userIdx) {
          inner join Book on Community.bookIdx = Book.bookIdx
 
          where CommunityBookMark.userIdx = ? and CommunityBookMark.status = 1 
-         and Book.status =1 and Community.status = 1;
+         and Book.status =1 and Community.status = 1
+         order by CommunityBookMark.updatedAt desc;
 
                 `;
 
@@ -146,6 +148,7 @@ async function getUserBookmarkBookstore(userIdx) {
      inner join StoreBookMark on StoreBookMark.bookstoreIdx = Bookstore.bookstoreIdx
 
      where Bookstore.status=1 and StoreBookMark.status = 1 and StoreBookMark.userIdx = ?
+     order by StoreBookMark.updatedAt desc;
 
                 `;
 
