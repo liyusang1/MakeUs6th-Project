@@ -599,7 +599,7 @@ exports.getUserBookmarkWriting= async function (req, res) {
              return res.json({
                  isSuccess: true,
                  code: 1000,
-                 result : {book:getBookNameRows,writing:getBookmarkWritingInfoRows},
+                 result : {myUserIdx:userIdx,book:getBookNameRows,writing:getBookmarkWritingInfoRows},
                  message: "내가 북마크 한 글 조회 완료"
              });
 
