@@ -91,7 +91,7 @@ async function getUserWriting(userIdx) {
   const connection = await pool.getConnection(async (conn) => conn);
   const getUserWritingQuery = `
   
-   select contentsIdx,bookName from Community
+   select distinct Community.bookIdx,bookName from Community
          left outer join Book on Community.bookIdx = Book.bookIdx
          where userIdx = ? and Community.status = 1 and Book.status =1;
 
@@ -110,7 +110,7 @@ async function getUserBookmarkWritingRows(userIdx) {
   const connection = await pool.getConnection(async (conn) => conn);
   const getUserBookmarkWritingQuery = `
   
-  select CommunityBookMark.contentsIdx,bookName from CommunityBookMark
+  select distinct Community.bookIdx,bookName from CommunityBookMark
          inner join Community on Community.contentsIdx = CommunityBookMark.contentsIdx
          inner join Book on Community.bookIdx = Book.bookIdx
 
