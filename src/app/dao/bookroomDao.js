@@ -74,25 +74,69 @@ async function searchbookroom(bookName) {
   return searchbookroomRow;
 }
 
+//조회 할 때마다 viewCount+1 되는 쿼리
+
+async function updateviewCount(bookIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const updateviewCountQuery =
+      `update Book set viewCount = viewCount +1 where bookIdx = ?;`;
+  const updateviewCountParams = [bookIdx];
+  const updateviewCountRow= await connection.query(
+      updateviewCountQuery,
+      updateviewCountParams
+  );
+  connection.release();
+  return updateviewCountRow;
+}
+
+
+
+
 
 // 6. 글 조회 - 최신순
-async function selectbookcontents(bookIdx) {
+async function selectbookcontents(bookIdx,page,limit) {
   const connection = await pool.getConnection(async (conn) => conn);
   const selectbookcontentsQuery = `
     select Users.userIdx, userImgUrl, nickname, date_format(Community.createdAt,'%Y.%m.%d') as createAt,contents
     from Community
            inner join Users on Users.userIdx = Community.userIdx
     where bookIdx = ?
-    order by Community.createdAt asc;
+    order by Community.createdAt desc
+    limit ?,?;
     `;
 
-  const selectbookcontentsParams = [bookIdx];
+  const selectbookcontentsParams = [bookIdx,Number(page),Number(limit)];
   const selectbookcontentsRow = await connection.query(
       selectbookcontentsQuery,
       selectbookcontentsParams
   );
+
   connection.release();
   return selectbookcontentsRow;
+}
+
+
+
+
+// 6. 글 조회 - 북마크순
+async function selectbookcontentsbookmark(bookIdx,page,limit) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const selectbookcontentsbookmarkQuery = `
+    select  bookIdx,Users.userIdx, userImgUrl, nickname, date_format(Community.createdAt,'%Y.%m.%d') as createAt,contents
+    from CommunityBookMark
+           left join Community on Community.contentsIdx = CommunityBookMark.contentsIdx
+           left join Users on Users.userIdx = Community.userIdx
+    where CommunityBookMark.status=1 and bookIdx=?
+    limit ?,?;
+    `;
+
+  const selectbookcontentsbookmarkParams = [bookIdx,Number(page),Number(limit)];
+  const selectbookcontentsbookmarkRow = await connection.query(
+      selectbookcontentsbookmarkQuery,
+      selectbookcontentsbookmarkParams
+  );
+  connection.release();
+  return selectbookcontentsbookmarkRow;
 }
 
 
@@ -179,9 +223,11 @@ module.exports = {
   selectbookroomPopular, // 3. 책방 리스트 조회 - 인기순
   searchbookroom, // 4. 책방 검색
   selectbookcontents, // 6. 글 조회 - 최신순
+  selectbookcontentsbookmark, // . 글 조회 - 북마크순
   updatecontents, // 글 수정
   deletecontents, // 글 삭제
   searchcontents, // 본문 내용 검색
-  checkContents // 본문 내용 검색 - Validation check
+  checkContents, // 본문 내용 검색 - Validation check
+  updateviewCount //글 조회 하면 viewCount +1 되는 dao
 
 };

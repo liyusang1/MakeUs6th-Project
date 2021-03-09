@@ -1,6 +1,6 @@
 module.exports = function(app){
     const bookroom = require('../controllers/bookroomController');
-    //const jwtMiddleware = require('../../../config/jwtMiddleware');
+    const jwtMiddleware = require('../../../config/jwtMiddleware');
 
     /** 홈화면 **/
     app.post('/books',bookroom.postbookroom); //jwtMiddleware 추가하기 , 책방 만들기
@@ -9,8 +9,8 @@ module.exports = function(app){
     app.get('/books',bookroom.searchbookroom); //jwtMiddleware 추가하기 , 책방 검색
 
     /** 책방 입장 **/
-    //app.get('/books/:bookIdx/bookmark-books', bookroom.); //jwtMiddleware 추가하기 , 커뮤니티 조회 - 북마크순
-    app.get('/books/:bookIdx/newest-books', bookroom.getbookcontents); //jwtMiddleware 추가하기 , 글 조회 - 최신순
+    app.get('/books/:bookIdx/bookmark-books',jwtMiddleware,bookroom.getbookcontentsbookmark); //jwtMiddleware 추가하기 , 커뮤니티 조회 - 북마크순
+    app.get('/books/:bookIdx/newest-books', jwtMiddleware,bookroom.getbookcontents); //jwtMiddleware 추가하기 , 글 조회 - 최신순
     //app.post('/books/:bookIdx/contents/:contentsIdx/report-contents', bookroom.); //jwtMiddleware 추가하기 , 신고하기
     //app.post('/books/:bookIdx/contents', bookroom.); //jwtMiddleware 추가하기 , 글 작성
     //app.patch('/books/:bookIdx/contents/:contentsIdx', bookroom.patchcontents); //jwtMiddleware 추가하기 , 글 수정
