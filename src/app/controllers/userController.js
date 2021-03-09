@@ -488,7 +488,7 @@ exports.deleteImage = async function (req, res) {
          }
  };
 
- //회원탈퇴
+//회원탈퇴
 exports.patchUserStatus = async function (req, res) {
 
     //유저인덱스
@@ -503,6 +503,51 @@ exports.patchUserStatus = async function (req, res) {
                  code: 1000,
                  message: "회원 탈퇴 완료"
              });
+         } catch (err) {
+             logger.error(`App - SignUp Query error\n: ${err.message}`);
+             return res.status(2010).send(`Error: ${err.message}`);
+         }
+ };
+
+//내가쓴글조회
+exports.getUserWriting = async function (req, res) {
+
+    //유저인덱스
+    const {userIdx} = req.verifiedToken;
+
+    //path variable로 bookIdx받음
+    const {bookIdx} = req.params;
+
+         try {
+             
+             const checkBookIdxRows = await userDao.checkBookIdx(bookIdx);
+             if(checkBookIdxRows.length ==0)
+             return res.json({
+                isSuccess: false,
+                code: 2000,
+                message: "해당하는 인덱스의 책이 존재 하지 않습니다."
+            });
+
+            const getUserWritingParams = [userIdx,bookIdx,userIdx];
+
+            //유저가 쓴글을 가져옴
+            const getUserWritingInfoRows = await userDao.getUserWritingInfo(getUserWritingParams);
+            //책 이름 정보 가져옴
+            const getBookNameRows = await userDao.getBookName(bookIdx);
+ 
+            if(getUserWritingInfoRows.length > 0 )
+             return res.json({
+                 isSuccess: true,
+                 code: 1000,
+                 result : {book:getBookNameRows,writing:getUserWritingInfoRows},
+                 message: "내가 쓴글 조회 완료"
+             });
+
+             return res.json({
+                isSuccess: false,
+                code: 4000,
+                message: "해당 인덱스 에는 내가 쓴글이 없습니다."
+            });
          } catch (err) {
              logger.error(`App - SignUp Query error\n: ${err.message}`);
              return res.status(2010).send(`Error: ${err.message}`);

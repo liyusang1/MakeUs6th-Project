@@ -31,4 +31,7 @@ module.exports = function(app){
 
     //회원탈퇴
     app.patch('/users/status',jwtMiddleware,user.patchUserStatus);
+
+    //내가 쓴 글 조회
+    app.get('/users-writing/books/:bookIdx',jwtMiddleware,user.getUserWriting);
 };

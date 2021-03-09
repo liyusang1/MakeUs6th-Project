@@ -226,6 +226,78 @@ async function patchUserStatus(userIdx) {
   return [patchUserStatusRows];
 }
 
+//bookIdx 체크
+async function checkBookIdx(bookIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const checkBookIdxQuery = `
+  
+         select bookIdx from Book where bookIdx = ?;
+
+                `;
+
+  const [checkBookIdxRows] = await connection.query(
+    checkBookIdxQuery,
+    bookIdx
+  );
+  connection.release();
+  return checkBookIdxRows;
+}
+
+//내가 쓴글 조회
+async function getUserWritingInfo(getUserWritingParams) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const getUserWritingInfoQuery = `
+  
+  select
+    ifnull(userImgUrl,-1)as userImgUrl,Users.userIdx,nickname,
+     CASE
+       WHEN TIMESTAMPDIFF(HOUR, Community.createdAt, now()) > 23
+          THEN IF(TIMESTAMPDIFF(DAY, Community.createdAt, now()) > 7, date_format(Community.createdAt, '%Y-%m-%d'),
+                  concat(TIMESTAMPDIFF(DAY, Community.createdAt, now()), " 일 전"))
+       WHEN TIMESTAMPDIFF(HOUR, Community.createdAt, now()) < 1
+          THEN concat(TIMESTAMPDIFF(MINUTE, Community.createdAt, now()), " 분 전")
+       ELSE concat(TIMESTAMPDIFF(HOUR, Community.createdAt, now()), " 시간 전")
+       END AS createdAt,
+
+  ifnull(isBookMark,0) as isBookMark,
+   Community.contentsIdx,contents
+     from Community
+       inner join Users on Users.userIdx = Community.userIdx
+
+       left outer join (select communityBookMarkIdx,CommunityBookMark.contentsIdx, count(*) as isBookMark from CommunityBookMark where userIdx = ? and status = 1
+       group by communityBookMarkIdx) BookMark
+       on Community.contentsIdx = BookMark.contentsIdx
+
+       where bookIdx = ? and Users.userIdx = ?
+       order by Community.createdAt desc ;
+
+                `;
+
+  const [getUserWritingInfoRows] = await connection.query(
+    getUserWritingInfoQuery,
+    getUserWritingParams
+  );
+  connection.release();
+  return getUserWritingInfoRows;
+}
+
+//bookname 전달 쿼리
+async function getBookName(bookIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const getBookNameQuery = `
+  
+         select bookName from Book where bookIdx = ?;
+
+                `;
+
+  const [getBookNameRows] = await connection.query(
+    getBookNameQuery,
+    bookIdx
+  );
+  connection.release();
+  return getBookNameRows;
+}
+
 module.exports = {
   userEmailCheck,
   userNicknameCheck,
@@ -238,5 +310,8 @@ module.exports = {
   updateUserPasswordInfo,
   updateNickname,
   updateImage,
-  patchUserStatus
+  patchUserStatus,
+  checkBookIdx,
+  getUserWritingInfo,
+  getBookName
 };
