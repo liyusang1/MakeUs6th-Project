@@ -37,4 +37,7 @@ module.exports = function(app){
 
     //내가 북마크 한 글 조회
     app.get('/users-bookmark/books/:bookIdx',jwtMiddleware,user.getUserBookmarkWriting);
+
+    //비밀번호 찾기
+    app.post('/find-password',user.findPassword);
 };

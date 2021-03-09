@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const regexEmail = require('regex-email');
 const crypto = require('crypto');
 const secret_config = require('../../../config/secret');
+const nodemailer = require('nodemailer');
 
 const userDao = require('../dao/userDao');
 const { constants } = require('buffer');
@@ -613,3 +614,113 @@ exports.getUserBookmarkWriting= async function (req, res) {
              return res.status(2010).send(`Error: ${err.message}`);
          }
  };
+
+//비밀 번호 찾기
+exports.findPassword = async function (req, res) {
+
+    //클라이언트로 부터 찾고자 하는 이메일을 입력 받음
+    const {email,nickname} = req.body;
+
+    if (!email) return res.json({
+        isSuccess: false,
+        code: 2000,
+        message: "이메일을 입력해 주세요."
+    });
+
+    if (!nickname) return res.json({isSuccess: false, code: 2001, message: "닉네임을 입력 해주세요"});
+
+    var englishCheck = /[a-zA-Z]/gi;
+
+    if (!/^([가-힣]).{1,8}$/.test(nickname) || englishCheck.test(nickname))
+    return res.json({
+      isSuccess: false,
+      code: 2002,
+      message: "유효하지 않은 닉네임 형식 입니다.",
+    });
+
+    if (!regexEmail.test(email)) return res.json({isSuccess: false, code: 2003, message: "이메일 형식을 정확하게 입력해주세요"});
+
+    //DB에 존재하는 유저의 이메일인지 검토
+    const [userInfoRows] = await userDao.selectUserInfo(email)
+        
+    if (userInfoRows.length == 0) return res.json({
+        isSuccess: false,
+        code: 3001,
+        message: "가입되지 않은 이메일 입니다."
+    });
+
+    if (userInfoRows[0].nickname != nickname) return res.json({
+        isSuccess: false,
+        code: 3002,
+        message: "올바르지 않은 닉네임 입니다. 가입하실 때 입력한 닉네임을 입력해 주세요."
+    });
+
+    //비밀번호를 랜덤 생성 할 변수
+    var variable = "0,1,2,3,4,5,6,7,8,9,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z".split(",");
+
+    //생성된 랜덤 비밀번호 저장, 이를 해시화 해서 DB에 넣을 것임
+    var randomPassword = createRandomPassword(variable, 8);
+
+    //비밀번호 랜덤 생성 함수
+    function createRandomPassword(variable, passwordLength) {
+        var randomString = "";
+          for (var j=0; j<passwordLength; j++) 
+            randomString += variable[Math.floor(Math.random()*variable.length)];
+            return randomString
+        }
+
+    try {
+        if (userInfoRows.length != 0){
+
+        var userIdx = userInfoRows[0].userIdx
+     
+        //임시 비밀번호를 해시화
+        const hashedPassword = await crypto.createHash('sha512').update(randomPassword).digest('hex');
+        
+        //해시화된 비밀번호를 DB에 저장
+        const newInfoParams = [hashedPassword,userIdx]; 
+        const newUserInfoRows = await userDao.updateUserPasswordInfo(newInfoParams)
+
+        //유저에게 메일 전송
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            port: 465,
+            secure: true,
+            // 이메일을 보낼 계정 데이터 값 입력
+            auth: { 
+              user: 'bindingcom@gmail.com',
+              pass: secret_config.gmailPassword,
+            },
+          });
+        // 옵션값 설정
+         const emailOptions = { 
+              from: 'bindingcom@gmail.com',
+              to:email,
+              subject: 'Binding에서 ' + userInfoRows[0].nickname+ '님께 임시비밀번호를 알려드립니다.',
+              html: 
+              "<h1 >Binding에서 새로운 비밀번호를 알려드립니다.</h1> <h2> 비밀번호 : " + randomPassword + "</h2>"
+              +'<h3 style="color: crimson;">임시 비밀번호로 로그인 하신 후, 반드시 비밀번호를 수정해 주세요.</h3>'
+              +'<img src="https://firebasestorage.googleapis.com/v0/b/mangoplate-a1a46.appspot.com/o/mailImg.png?alt=media&token=75e07db2-5aa6-4cb2-809d-776ba037fdec">'		
+              ,
+            };
+            //전송
+            transporter.sendMail(emailOptions, res); 
+        
+        return res.json({
+            isSuccess: true,
+            code: 1000,
+            message: "임시비밀번호를 "+email+"으로 발송했습니다. 확인해 주세요."
+        });
+    }
+     
+    return res.json({
+        isSuccess: false,
+        code: 3000,
+        message: "에러 발생"
+    });
+        
+    } catch (err) {
+        logger.error(`App - SignIn Query error\n: ${JSON.stringify(err)}`);
+        return res.status(2010).send(`Error: ${err.message}`);
+    }
+};
