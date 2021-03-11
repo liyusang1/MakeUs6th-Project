@@ -1,7 +1,6 @@
 # MakeUs 6기 APP 런칭 프로젝트 Binding
 
-본 템플릿은 소프트스퀘어드 MakeUs에 소유권이 있으며 본 자료에 대한 상업적 이용 및 무단 복제,배포 및 변경을 원칙적으로 금지하며 이를 위반할 때에는 형사처벌을 받을 수 있습니다.
->프리미엄 앱 런칭 동아리 MakeUs 6기에서 App 런칭 프로젝트 'Binding'에 사용된 백엔드 코드입니다.
+### 수익형 앱 런칭 동아리 MakeUs 6기에서 App 런칭 프로젝트 'Binding'에 사용된 백엔드 코드입니다.
 ---
 ## 개발 환경
 >AWS EC2에서 Node를 통해 서버를 구동하고 AWS RDS를 사용.
@@ -11,6 +10,10 @@
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Amazon_Web_Services_Logo.svg/1200px-Amazon_Web_Services_Logo.svg.png" width="180" height="100"><img src="https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbnveOL%2FbtqKylNzdtm%2FN9aaEvOxd7Hm0N0KJYg6l0%2Fimg.png" width="180" height="100"><img src="https://media.vlpt.us/images/ayoung0073/post/e736dc61-9be5-4f91-b751-4a1f64bc4a97/rds.png" width="180" height="100">
 
+
+---
+## License
+본 템플릿은 소프트스퀘어드 MakeUs에 소유권이 있으며 본 자료에 대한 상업적 이용 및 무단 복제,배포 및 변경을 원칙적으로 금지하며 이를 위반할 때에는 형사처벌을 받을 수 있습니다.
 
 ---
 ## Binding
