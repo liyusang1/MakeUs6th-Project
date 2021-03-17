@@ -511,6 +511,7 @@ exports.patchUserStatus = async function (req, res) {
  };
 
 //내가쓴글조회
+//특정 bookIdx에서 내가 쓴 글만 조회 하는 기능
 exports.getUserWriting = async function (req, res) {
 
     //유저인덱스
@@ -564,6 +565,7 @@ exports.getUserWriting = async function (req, res) {
 
 
  //내가 북마크 한 글 조회
+ //특정 bookIdx에서 내가 북마크하는 글만 조회 하는 기능
 exports.getUserBookmarkWriting= async function (req, res) {
 
     //유저인덱스
