@@ -44,7 +44,7 @@ const { page,limit } = req.query;
   } catch (err) {
     // await connection.rollback(); // ROLLBACK
     // connection.release();
-    logger.error(`App - SignUp Query error\n: ${err.message}`);
+    logger.error(`App - getAllBookstore error\n: ${err.message}`);
     return res.status(500).send(`Error: ${err.message}`);
   }
 }
@@ -135,7 +135,7 @@ exports.getBookstore = async function (req, res) {
       });
     } catch (err) {
     
-      logger.error(`App - SignUp Query error\n: ${err.message}`);
+      logger.error(`App - getBookstore error\n: ${err.message}`);
       return res.status(500).send(`Error: ${err.message}`);
     }
   }
@@ -188,7 +188,7 @@ exports.bookstoreDetail = async function (req, res) {
     } catch (err) {
       // await connection.rollback(); // ROLLBACK
       // connection.release();
-      logger.error(`App - SignUp Query error\n: ${err.message}`);
+      logger.error(`App - bookstoreDetail error\n: ${err.message}`);
       return res.status(500).send(`Error: ${err.message}`);
     }
   }
@@ -267,7 +267,7 @@ exports.bookmarkBookstore = async function (req, res) {
     } catch (err) {
       // await connection.rollback(); // ROLLBACK
       // connection.release();
-      logger.error(`App - SignUp Query error\n: ${err.message}`);
+      logger.error(`App - bookmarkBookstore error\n: ${err.message}`);
       return res.status(500).send(`Error: ${err.message}`);
     }
   }
