@@ -122,7 +122,7 @@ async function selectbookcontents(bookIdx,page,limit) {
 async function selectbookcontentsbookmark(bookIdx,page,limit) {
   const connection = await pool.getConnection(async (conn) => conn);
   const selectbookcontentsbookmarkQuery = `
-    select  bookIdx,Community.contentsIdx,Community.status,Users.userIdx, ifnull(userImgUrl,-1) as userImgUrl, nickname, date_format(Community.createdAt,'%Y.%m.%d') as createAt,contents
+    select  bookIdx,Community.contentsIdx,CommunityBookMark.status,Users.userIdx, ifnull(userImgUrl,-1) as userImgUrl, nickname, date_format(Community.createdAt,'%Y.%m.%d') as createAt,contents
     from CommunityBookMark
            left join Community on Community.contentsIdx = CommunityBookMark.contentsIdx
            left join Users on Users.userIdx = Community.userIdx
@@ -220,7 +220,7 @@ async function updatecontents(contents,userIdx,bookIdx,contentsIdx) {
 
 
 // . 글 삭제
-/**async function deletecontents(userIdx,bookIdx,contentsIdx) {
+async function deletecontents(userIdx,bookIdx,contentsIdx) {
   const connection = await pool.getConnection(async (conn) => conn);
   const deletecontentsQuery = `
     delete from Community
@@ -233,7 +233,7 @@ async function updatecontents(contents,userIdx,bookIdx,contentsIdx) {
   );
   connection.release();
   return deletecontentsRow;
-}**/
+}
 
 // . 본문 검색 - 내용
 async function searchcontents(bookIdx,contents) {
@@ -274,23 +274,86 @@ async function checkContents(bookIdx,contents) {
   return checkContentsRow[0]['checkcontents'];
 }
 
-// . 글 신고하기
-/**async function insertreport(contentsIdx,reportUserIdx,targetUserIdx,reportReason) {
+// . 글 신고하기 + userIdx
+/**async function insertreport(contentsIdx,reportUserIdx,reportReason) {
   const connection = await pool.getConnection(async (conn) => conn);
   const insertreportQuery = `
-   insert into Report(contentsIdx,reportUserIdx,targetUserIdx,reportReason)
-values (?,?,?,?);
+    insert into Report(contentsIdx,reportUserIdx,reportReason)
+    values (?,?,?);
     `;
-  const insertreportParams = [contentsIdx,reportUserIdx,targetUserIdx,reportReason];
+  const insertreportParams = [contentsIdx,reportUserIdx,reportReason];
   const insertreportRow = await connection.query(
       insertreportQuery,
       insertreportParams
   );
   connection.release();
   return insertreportRow;
-}**/
+}
 
+// . 글 신고하기 + targetUserIdx
+async function insertreportTarget(bookIdx,contentsIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const insertreportTargetQuery = `
+    insert into Report(targetUserIdx)
+select userIdx from Community where bookIdx=? and contentsIdx=?;
+    `;
+  const insertreportTargetParams = [bookIdx,contentsIdx];
+  const insertreportTargetRow = await connection.query(
+      insertreportTargetQuery,
+      insertreportTargetParams
+  );
+  connection.release();
+  return insertreportTargetRow;
+} **/
 
+// 글 북마크가 등록 되어 있는지 체크 쿼리 GET
+async function checkbookmark(userIdx,contentsIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const checkbookmarkQuery = `
+    select status from CommunityBookMark where userIdx=? and contentsIdx=?;
+    `;
+  const checkbookmarkParams = [userIdx,contentsIdx];
+  const checkbookmarkRow = await connection.query(
+      checkbookmarkQuery,
+      checkbookmarkParams
+  );
+  connection.release();
+  return checkbookmarkRow;
+}
+
+//1. X => 글 북마크 설정 쿼리 POST
+async function insertbookmark(userIdx,contentsIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const insertbookmarkQuery = `
+    insert into CommunityBookMark(userIdx,contentsIdx)
+values (?,?);
+    `;
+  const insertbookmarkParams = [userIdx,contentsIdx];
+  const insertbookmarkRow = await connection.query(
+      insertbookmarkQuery,
+      insertbookmarkParams
+  );
+  connection.release();
+  return insertbookmarkRow;
+}
+
+// 2.O=> 글 북마크 상태 변경 쿼리 PATCH
+
+async function updatebookmark(userIdx,contentsIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const updatebookmarkQuery = `
+    update CommunityBookMark
+set status= if(status =1,0,1)
+where userIdx =? and contentsIdx=?;
+    `;
+  const updatebookmarkParams = [userIdx,contentsIdx];
+  const updatebookmarkRow = await connection.query(
+      updatebookmarkQuery,
+      updatebookmarkParams
+  );
+  connection.release();
+  return updatebookmarkRow;
+}
 
 
 module.exports = {
@@ -309,5 +372,9 @@ module.exports = {
   checkContentsUserIdx, //contents userIdx 체크
   checkContentsContentsIdx, // contentsIdx 체크
   checkbookroomIdx, //bookIdx 체크
-  insertreport //신고하기
+  //insertreport, //신고하기
+  //insertreportTarget, //신고하기2
+  checkbookmark,
+  insertbookmark,
+  updatebookmark
 };

@@ -14,8 +14,7 @@ module.exports = function(app){
     //app.post('/books/:bookIdx/contents/:contentsIdx/report-contents', jwtMiddleware,bookroom.postreport); //jwtMiddleware 추가하기 , 신고하기
     app.post('/books/:bookIdx/contents', jwtMiddleware,bookroom.postcontents); //jwtMiddleware 추가하기 , 글 작성
     app.patch('/books/:bookIdx/contents/:contentsIdx', jwtMiddleware,bookroom.patchcontents); //jwtMiddleware 추가하기 , 글 수정
-    //app.delete('/books/:bookIdx/contents/:contentsIdx', jwtMiddleware,bookroom.deletecontents); // 글 삭제
-    //app.post('/contents/:contentsIdx/bookmark', bookroom.); //jwtMiddleware 추가하기 , 북마크 설정
-    //app.patch('/contents/:contentsIdx/bookmark', bookroom.); //jwtMiddleware 추가하기 , 북마크 해제
+    app.delete('/books/:bookIdx/contents/:contentsIdx', jwtMiddleware,bookroom.deletecontents); // 글 삭제
+    app.patch('/books/:bookIdx/contents/:contentsIdx/bookmark',jwtMiddleware,bookroom.patchContentsbookmark); //jwtMiddleware 추가하기 , 북마크 설정
     app.get('/books/:bookIdx/contents', bookroom.searchcontents); //jwtMiddleware 추가하기 , 본문검색
 };
