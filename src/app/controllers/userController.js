@@ -216,7 +216,7 @@ exports.checkEmail = async function (req, res) {
                 message: email+"은 사용가능한 이메일 입니다."
             });
         } catch (err) {
-            logger.error(`App - SignUp Query error\n: ${err.message}`);
+            logger.error(`App - checkEmail error\n: ${err.message}`);
             return res.status(2010).send(`Error: ${err.message}`);
         }
 };
@@ -257,7 +257,7 @@ exports.myPage = async function (req, res) {
                 message: "에러 발생"
             });
         } catch (err) {
-            logger.error(`App - SignUp Query error\n: ${err.message}`);
+            logger.error(`App - myPage error\n: ${err.message}`);
             return res.status(2010).send(`Error: ${err.message}`);
         }
 };
@@ -322,7 +322,7 @@ exports.changePassword = async function (req, res) {
         });
         
     } catch (err) {
-        logger.error(`App - SignIn Query error\n: ${JSON.stringify(err)}`);
+        logger.error(`App - changePassword error\n: ${JSON.stringify(err)}`);
         return res.status(2010).send(`Error: ${err.message}`);
     }
 };
@@ -351,7 +351,7 @@ exports.profile = async function (req, res) {
                  message: "에러 발생"
              });
          } catch (err) {
-             logger.error(`App - SignUp Query error\n: ${err.message}`);
+             logger.error(`App - profile error\n: ${err.message}`);
              return res.status(2010).send(`Error: ${err.message}`);
          }
  };
@@ -420,7 +420,7 @@ exports.changeNickname = async function (req, res) {
                  message: currentNickname +" 에서 "+nickname+" 으로 닉네임 변경 완료"
              });
          } catch (err) {
-             logger.error(`App - SignUp Query error\n: ${err.message}`);
+             logger.error(`App - changeNickname error\n: ${err.message}`);
              return res.status(2010).send(`Error: ${err.message}`);
          }
  };
@@ -452,7 +452,7 @@ exports.patchImage = async function (req, res) {
                  message: "프로필 이미지 변경 완료"
              });
          } catch (err) {
-             logger.error(`App - SignUp Query error\n: ${err.message}`);
+             logger.error(`App - patchImage error\n: ${err.message}`);
              return res.status(2010).send(`Error: ${err.message}`);
          }
  };
@@ -484,7 +484,7 @@ exports.deleteImage = async function (req, res) {
                  message: "프로필 이미지 삭제 완료"
              });
          } catch (err) {
-             logger.error(`App - SignUp Query error\n: ${err.message}`);
+             logger.error(`App - deleteImage error\n: ${err.message}`);
              return res.status(2010).send(`Error: ${err.message}`);
          }
  };
@@ -505,7 +505,7 @@ exports.patchUserStatus = async function (req, res) {
                  message: "회원 탈퇴 완료"
              });
          } catch (err) {
-             logger.error(`App - SignUp Query error\n: ${err.message}`);
+             logger.error(`App - patchUserStatus error\n: ${err.message}`);
              return res.status(2010).send(`Error: ${err.message}`);
          }
  };
@@ -558,7 +558,7 @@ exports.getUserWriting = async function (req, res) {
                 message: "해당 인덱스에는 내가 쓴글이 없습니다."
             });
          } catch (err) {
-             logger.error(`App - SignUp Query error\n: ${err.message}`);
+             logger.error(`App - getUserWriting error\n: ${err.message}`);
              return res.status(2010).send(`Error: ${err.message}`);
          }
  };
@@ -612,7 +612,7 @@ exports.getUserBookmarkWriting= async function (req, res) {
                 message: "해당 인덱스에는 내가 북마크 한 글이 없습니다."
             });
          } catch (err) {
-             logger.error(`App - SignUp Query error\n: ${err.message}`);
+             logger.error(`App - getUserBookmarkWriting error\n: ${err.message}`);
              return res.status(2010).send(`Error: ${err.message}`);
          }
  };
@@ -722,7 +722,7 @@ exports.findPassword = async function (req, res) {
     });
         
     } catch (err) {
-        logger.error(`App - SignIn Query error\n: ${JSON.stringify(err)}`);
+        logger.error(`App - findPassword error\n: ${JSON.stringify(err)}`);
         return res.status(2010).send(`Error: ${err.message}`);
     }
 };
