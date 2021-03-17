@@ -274,14 +274,14 @@ async function checkContents(bookIdx,contents) {
   return checkContentsRow[0]['checkcontents'];
 }
 
-// . 글 신고하기 + userIdx
-/**async function insertreport(contentsIdx,reportUserIdx,reportReason) {
+// . 글 신고하기 new!
+async function insertreport(contentsIdx,reportUserIdx,targetUserIdx,reportReason) {
   const connection = await pool.getConnection(async (conn) => conn);
   const insertreportQuery = `
-    insert into Report(contentsIdx,reportUserIdx,reportReason)
-    values (?,?,?);
+    insert into Report(contentsIdx,reportUserIdx,targetUserIdx,reportReason)
+    values (?,?,?,?);
     `;
-  const insertreportParams = [contentsIdx,reportUserIdx,reportReason];
+  const insertreportParams = [contentsIdx,reportUserIdx,targetUserIdx,reportReason];
   const insertreportRow = await connection.query(
       insertreportQuery,
       insertreportParams
@@ -290,21 +290,21 @@ async function checkContents(bookIdx,contents) {
   return insertreportRow;
 }
 
-// . 글 신고하기 + targetUserIdx
-async function insertreportTarget(bookIdx,contentsIdx) {
+// . 글 신고하기 select targetUserIdx
+async function getTargetUserIdx(bookIdx,contentsIdx) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const insertreportTargetQuery = `
-    insert into Report(targetUserIdx)
-select userIdx from Community where bookIdx=? and contentsIdx=?;
+  const getTargetUserIdxQuery = `
+    select userIdx from Community where bookIdx=? and contentsIdx=?;
     `;
-  const insertreportTargetParams = [bookIdx,contentsIdx];
-  const insertreportTargetRow = await connection.query(
-      insertreportTargetQuery,
-      insertreportTargetParams
+  const getTargetUserIdxParams = [bookIdx,contentsIdx];
+  const [getTargetUserIdxRow] = await connection.query(
+      getTargetUserIdxQuery,
+      getTargetUserIdxParams
   );
   connection.release();
-  return insertreportTargetRow;
-} **/
+  return getTargetUserIdxRow[0]['userIdx'];
+}
+
 
 // 글 북마크가 등록 되어 있는지 체크 쿼리 GET
 async function checkbookmark(userIdx,contentsIdx) {
@@ -372,8 +372,8 @@ module.exports = {
   checkContentsUserIdx, //contents userIdx 체크
   checkContentsContentsIdx, // contentsIdx 체크
   checkbookroomIdx, //bookIdx 체크
-  //insertreport, //신고하기
-  //insertreportTarget, //신고하기2
+  insertreport, //신고하기
+  getTargetUserIdx,
   checkbookmark,
   insertbookmark,
   updatebookmark

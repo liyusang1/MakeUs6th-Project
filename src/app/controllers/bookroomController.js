@@ -598,20 +598,20 @@ exports.searchcontents = async function (req, res) {
 };
 
 // . 글 신고 /books/:bookIdx/contents/:contentsIdx/report-contents
-/**exports.postreport = async function (req, res) {
-    var bookIdx = req.params['bookIdx'];
-    var contentsIdx = req.params['contentsIdx'];
+exports.postreport = async function (req, res) {
     const {
         reportReason
     } = req.body;
     const userIdx = req.verifiedToken.userIdx;
+    var bookIdx = req.params['bookIdx'];
+    var contentsIdx = req.params['contentsIdx'];
 
     //validation 처리
     if (reportReason.length<1)
         return res.json({
             isSuccess: false,
             code: 2001,
-            message: "신고 사유를 입력해주세요."
+            message: "수정할 내용을 입력해주세요."
         });
 
     const checkbookroomIdxRow = await bookroomDao.checkbookroomIdx(bookIdx)
@@ -651,41 +651,42 @@ exports.searchcontents = async function (req, res) {
             message: "해당 글이 존재하지 않습니다."
         });
 
-    const checkContentsUserIdxRow = await bookroomDao.checkContentsUserIdx(bookIdx,contentsIdx)
+    try {
+        const checkContentsUserIdxRow = await bookroomDao.checkContentsUserIdx(bookIdx,contentsIdx)
+        if (userIdx == checkContentsUserIdxRow)
+            return res.json({
+                isSuccess: false,
+                code: 2002,
+                message: "당신의 유저 인덱스 번호와 글을 작성한 유저 인덱스 번호가 일치하여 신고가 불가능합니다."
+            });
 
-    if (userIdx == checkContentsUserIdxRow)
+        const getTargetUserIdxRow= await bookroomDao.getTargetUserIdx(bookIdx,contentsIdx)
+        console.log(getTargetUserIdxRow);
+        const targetUserIdx = getTargetUserIdxRow;
+
+        const [insertreportRow] = await bookroomDao.insertreport(contentsIdx,userIdx,targetUserIdx,reportReason)
+
+
+
+
+
+        if (insertreportRow) {
+            return res.json({
+                isSuccess: true,
+                code: 1000,
+                message: "글이 신고되었습니다"
+            });
+        }
         return res.json({
             isSuccess: false,
-            code: 2002,
-            message: "당신의 유저 인덱스 번호와 글을 작성한 유저 인덱스 번호가 일치하여 신고가 불가능합니다."
+            code: 2000,
+            message: "글 수정을 실패하였습니다."
         });
-
-        try{
-            await connection.beginTransaction(); // START Transaction
-
-            const [insertreportRow] = await bookroomDao.insertreportTransaction(bookIdx,contentsIdx,userIdx,reportReason);
-
-            const [insertreportTargetRow] = await bookroomDao.insertreportTarget(bookIdx,contentsIdx);
-
-            if (insertreportRow) {
-                return res.json({
-                    isSuccess: true,
-                    code: 1000,
-                    message: "글이 신고되었습니다"
-                });
-            }
-            await connection.commit(); // COMMIT
-
-        } catch(err){
-            await connection.rollback(); // ROLLBACK
-            logger.error(`Transaction Query error\n: ${JSON.stringify(err)}`);
-            return false;
-        }
-        finally {
-            connection.release();
-        }
-    };**/
-
+    } catch (err) {
+        logger.error(`App - postreport Query error\n: ${JSON.stringify(err)}`);
+        return false;
+    }
+};
 
 
 // 글 북마크 설정/해제
