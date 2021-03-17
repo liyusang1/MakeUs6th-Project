@@ -48,14 +48,13 @@ exports.postbookroom = async function (req, res) {
 exports.getbookroom = async function (req, res) {
     const {page,limit} = req.query;
 
-    //페이징 validation 처리
-    // 1. page 값은 1부터 시작 ex) 1페이지
-    if (page<1)
-        return res.json({
-            isSuccess: false,
-            code: 2001,
-            message: "페이지를 1부터 입력해주세요"
-        });
+   //페이징 validation 처리
+   if((!page) || (!limit))
+       return res.json({
+           isSuccess: false,
+           code: 2001,
+           message: "page와 limit을 입력해 주세요."
+      });
 
     // 2. limit 값은 1부터 시작
     if (limit < 1)
@@ -66,7 +65,7 @@ exports.getbookroom = async function (req, res) {
         });
 
     try {
-        const [selectbookroomRow] = await bookroomDao.selectbookroom(start,infoCount)
+        const [selectbookroomRow] = await bookroomDao.selectbookroom(page,limit)
 
         // 3. 해당 페이지 요청했을 때 값이 더이상 없는 경우(먼저 비어있는지 확인하는 함수 선언)
         var isEmpty = function (val){
@@ -111,14 +110,13 @@ exports.getbookroom = async function (req, res) {
 exports.getbookroomPopular = async function (req, res) {
     const {page,limit} = req.query;
 
-    //페이징 validation 처리
-    // 1. page 값은 1부터 시작 ex) 1페이지
-    if (page<1)
-        return res.json({
-            isSuccess: false,
-            code: 2001,
-            message: "페이지를 1부터 입력해주세요"
-        });
+  //페이징 validation 처리
+   if((!page) || (!limit))
+   return res.json({
+       isSuccess: false,
+       code: 2001,
+       message: "page와 limit을 입력해 주세요."
+    });
 
     // 2. limit 값은 1부터 시작
          if (limit < 1)
@@ -129,7 +127,7 @@ exports.getbookroomPopular = async function (req, res) {
             });
 
     try {
-        const selectbookroomPopular = await bookroomDao.selectbookroomPopular(start,infoCount)
+        const selectbookroomPopular = await bookroomDao.selectbookroomPopular(page,limit)
 
         // 3. 해당 페이지 요청했을 때 값이 더이상 없는 경우(먼저 비어있는지 확인하는 함수 선언)
         var isEmpty = function (val){
@@ -204,8 +202,6 @@ exports.searchbookroom = async function (req, res) {
     }
 };
 
-
-
 // 6. 글 조회 - 최신순
 exports.getbookcontents = async function (req, res) {
     var bookIdx = req.params['bookIdx'] //path variable
@@ -213,15 +209,13 @@ exports.getbookcontents = async function (req, res) {
 
     const userIdx = req.verifiedToken;
 
-
     //페이징 validation 처리
-    // 1. page 값은 1부터 시작 ex) 1페이지
-    if (page<1)
-        return res.json({
-            isSuccess: false,
-            code: 2001,
-            message: "페이지를 1부터 입력해주세요"
-        });
+   if((!page) || (!limit))
+   return res.json({
+       isSuccess: false,
+       code: 2001,
+       message: "page와 limit을 입력해 주세요."
+  });
 
     // 2. limit 값은 1부터 시작
     if (limit < 1)
@@ -233,7 +227,7 @@ exports.getbookcontents = async function (req, res) {
 
 
     try {
-        const [selectbookcontentsRow] = await bookroomDao.selectbookcontents(bookIdx,start,infoCount)
+        const [selectbookcontentsRow] = await bookroomDao.selectbookcontents(bookIdx,page,limit)
 
 
         // 3. 해당 페이지 요청했을 때 값이 더이상 없는 경우(먼저 비어있는지 확인하는 함수 선언)
@@ -286,13 +280,12 @@ exports.getbookcontentsbookmark = async function (req, res) {
     const userIdx = req.verifiedToken;
 
     //페이징 validation 처리
-    // 1. page 값은 1부터 시작 ex) 1페이지
-    if (page<1)
-        return res.json({
-            isSuccess: false,
-            code: 2001,
-            message: "페이지를 1부터 입력해주세요"
-        });
+    if((!page) || (!limit))
+    return res.json({
+        isSuccess: false,
+        code: 2001,
+        message: "page와 limit을 입력해 주세요."
+   });
 
     // 2. limit 값은 1부터 시작
     if (limit < 1)
@@ -304,7 +297,7 @@ exports.getbookcontentsbookmark = async function (req, res) {
 
 
     try {
-        const [selectbookcontentsbookmarkRow] = await bookroomDao.selectbookcontentsbookmark(bookIdx,start,infoCount)
+        const [selectbookcontentsbookmarkRow] = await bookroomDao.selectbookcontentsbookmark(bookIdx,page,limit)
 
         // 3. 해당 페이지 요청했을 때 값이 더이상 없는 경우(먼저 비어있는지 확인하는 함수 선언)
 
@@ -357,7 +350,7 @@ exports.postcontents = async function (req, res) {
     } = req.body;
 
     //validation 처리
-    if (contents.length<1)
+    if (!contents)
         return res.json({
             isSuccess: false,
             code: 2001,
@@ -393,11 +386,11 @@ exports.patchcontents = async function (req, res) {
         contents
     } = req.body;
     const userIdx = req.verifiedToken.userIdx;
-    var bookIdx = req.params['bookIdx'];
-    var contentsIdx = req.params['contentsIdx'];
+    const {bookIdx} = req.params;
+    const {contentsIdx} = req.params;
 
     //validation 처리
-    if (contents.length<1)
+    if (!contents)
         return res.json({
             isSuccess: false,
             code: 2001,
@@ -440,9 +433,6 @@ exports.patchcontents = async function (req, res) {
             code: 2004,
             message: "해당 글이 존재하지 않습니다."
         });
-
-
-
 
     try {
         const [updatecontentsRow] = await bookroomDao.updatecontents(contents,userIdx,bookIdx,contentsIdx)
@@ -691,7 +681,6 @@ exports.searchcontents = async function (req, res) {
 // 글 북마크 설정/해제
 exports. patchContentsbookmark = async function (req, res) {
     var contentsIdx = req.params['contentsIdx'];
-    const {bookIdx} = req.params;
     const userIdx = req.verifiedToken.userIdx;
 
 
