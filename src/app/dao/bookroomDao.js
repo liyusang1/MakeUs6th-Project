@@ -159,7 +159,9 @@ async function postcontents(userIdx,bookIdx,contents) {
 async function checkContentsUserIdx(bookIdx,contentsIdx) {
   const connection = await pool.getConnection(async (conn) => conn);
   const checkContentsUserIdxQuery = `
-    select userIdx from Community where bookIdx=? and contentsIdx=?;
+    select case when count(userIdx) = 0 then count(userIdx)
+                when count(userIdx) != 0 then userIdx end as userIdx
+    from Community where bookIdx=? and contentsIdx=?;
     `;
   const checkContentsUserIdxParams = [bookIdx,contentsIdx];
   const [checkContentsUserIdxRow] = await connection.query(
@@ -189,7 +191,9 @@ async function checkContentsContentsIdx(contentsIdx) {
 async function checkbookroomIdx(bookIdx) {
   const connection = await pool.getConnection(async (conn) => conn);
   const checkbookroomIdxQuery = `
-    select bookIdx from Book where bookIdx=?;
+    select Community.bookIdx from Community
+                                    inner join Book on Book.bookIdx = Community.bookIdx
+    where Book.bookIdx=?;
     `;
   const checkbookroomIdxParams = [bookIdx];
   const [checkbookroomIdxRow] = await connection.query(

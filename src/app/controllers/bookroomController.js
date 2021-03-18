@@ -434,8 +434,8 @@ exports.patchcontents = async function (req, res) {
             message: "해당 글이 존재하지 않습니다."
         });
 
+
     try {
-        const [updatecontentsRow] = await bookroomDao.updatecontents(contents,userIdx,bookIdx,contentsIdx)
         const checkContentsUserIdxRow = await bookroomDao.checkContentsUserIdx(bookIdx,contentsIdx)
 
 
@@ -446,6 +446,7 @@ exports.patchcontents = async function (req, res) {
                 message: "당신의 유저 인덱스 번호와 글을 작성한 유저 인덱스 번호가 일치하지 않습니다."
             });
 
+        const [updatecontentsRow] = await bookroomDao.updatecontents(contents,userIdx,bookIdx,contentsIdx)
         if (updatecontentsRow) {
             return res.json({
                 isSuccess: true,
