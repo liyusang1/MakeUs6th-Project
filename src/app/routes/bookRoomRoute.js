@@ -3,10 +3,10 @@ module.exports = function(app){
     const jwtMiddleware = require('../../../config/jwtMiddleware');
 
     /** 홈화면 **/
-    app.post('/books',bookroom.postbookroom); //jwtMiddleware 추가하기 , 책방 만들기
-    app.get('/books/newest-books',bookroom.getbookroom); //jwtMiddleware 추가하기 , 책방 리스트 조회 - 최신순
-    app.get('/books/popularity-books', bookroom.getbookroomPopular); //jwtMiddleware 추가하기 , 책방 리스트 조회 - 인기순
-    app.get('/books',bookroom.searchbookroom); //jwtMiddleware 추가하기 , 책방 검색
+    app.post('/books',jwtMiddleware,bookroom.postbookroom); // 책방 만들기
+    app.get('/books/newest-books',bookroom.getbookroom); // 책방 리스트 조회 - 최신순
+    app.get('/books/popularity-books', bookroom.getbookroomPopular); //책방 리스트 조회 - 인기순
+    app.get('/books',bookroom.searchbookroom); // 책방 검색
 
     /** 책방 입장 **/
     app.get('/books/:bookIdx/bookmark-books',jwtMiddleware,bookroom.getbookcontentsbookmark); //jwtMiddleware 추가하기 , 커뮤니티 조회 - 북마크순

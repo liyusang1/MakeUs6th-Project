@@ -13,7 +13,7 @@ const { constants } = require('buffer');
 /** 홈화면 **/
 // 1. 책방 만들기
 exports.postbookroom = async function (req, res) {
-
+    const userIdx = req.verifiedToken;
     const {
         bookName,authorName,bookImgUrl
     } = req.body;
@@ -154,13 +154,13 @@ exports.getbookroomPopular = async function (req, res) {
                 result:selectbookroomPopular,
                 isSuccess: true,
                 code: 1000,
-                message: "책방 리스트 조회 인기순 성공입니다."
+                message: "책방 리스트 인기순 조회 성공입니다."
             });
         }
         return res.json({
             isSuccess: false,
             code: 2000,
-            message: "책방 리스트 조회 인기순 실패입니다."
+            message: "책방 리스트 인기순 조회 실패입니다."
         });
     } catch (err) {
         logger.error(`App - getbookroomPopular Query error\n: ${JSON.stringify(err)}`);
@@ -171,17 +171,35 @@ exports.getbookroomPopular = async function (req, res) {
 // 4. 책방 검색
 exports.searchbookroom = async function (req, res) {
     const {bookName} = req.query;
+    const {page,limit} = req.query;
 
-    //원하는 값이 안들어올 경우 에러 처리 해주세요
-    if (!bookName)
+    //페이징 validation 처리
+    if((!page) || (!limit))
         return res.json({
             isSuccess: false,
             code: 2001,
+            message: "page와 limit을 입력해 주세요."
+        });
+
+    // 2. limit 값은 1부터 시작
+    if (limit < 1)
+        return res.json({
+            isSuccess: false,
+            code: 2002,
+            message: "페이지 당 불러올 정보의 개수를 1부터 입력해주세요"
+        });
+
+//원하는 값이 안들어올 경우 에러 처리 해주세요
+    if (!bookName)
+        return res.json({
+            isSuccess: false,
+            code: 2003,
             message: "bookName을 입력해주세요."
         });
 
+
     try {
-        const searchbookroomRow = await bookroomDao.searchbookroom(bookName)
+        const searchbookroomRow = await bookroomDao.searchbookroom(bookName,page,limit)
 
         if (searchbookroomRow) {
             return res.json({

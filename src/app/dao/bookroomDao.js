@@ -57,17 +57,21 @@ async function selectbookroomPopular(page,limit) {
 }
 
 // 4. 책방검색
-async function searchbookroom(bookName) {
+async function searchbookroom(bookName,page,limit) {
   const connection = await pool.getConnection(async (conn) => conn);
   const searchbookroomQuery = `
-    select Book.bookIdx, bookImgUrl, bookName, authorName
+    select Book.bookIdx, bookImgUrl, bookName, authorName, concat(ifnull(count(Community.bookIdx),0),'개의 글') as contentsCount
     from Book
-    where bookName like concat('%',?,'%');
+           left JOIN Community on Community.bookIdx = Book.bookIdx
+    where bookName like concat('%',?,'%')
+    group by bookIdx
+    order by Book.viewCount desc
+limit ?,?;
   `;
-
+  const searchbookroomParams = [bookName,Number(page),Number(limit)];
   const [searchbookroomRow] = await connection.query(
       searchbookroomQuery,
-      bookName
+      searchbookroomParams
   );
   connection.release();
   //console.log(searchbookroomRow);
