@@ -9,13 +9,13 @@ module.exports = function(app){
     app.get('/books',bookroom.searchbookroom); // 책방 검색
 
     /** 책방 입장 **/
-    app.get('/books/:bookIdx/bookmark-books',jwtMiddleware,bookroom.getbookcontentsbookmark); //jwtMiddleware 추가하기 , 커뮤니티 조회 - 북마크순
-    app.get('/books/:bookIdx/newest-books', jwtMiddleware,bookroom.getbookcontents); //jwtMiddleware 추가하기 , 글 조회 - 최신순
-    app.post('/books/:bookIdx/contents/:contentsIdx/report-contents', jwtMiddleware,bookroom.postreport); //jwtMiddleware 추가하기 , 신고하기
-    app.post('/books/:bookIdx/contents', jwtMiddleware,bookroom.postcontents); //jwtMiddleware 추가하기 , 글 작성
-    app.patch('/books/:bookIdx/contents/:contentsIdx', jwtMiddleware,bookroom.patchcontents); //jwtMiddleware 추가하기 , 글 수정
+    app.get('/books/:bookIdx/bookmark-books',jwtMiddleware,bookroom.getbookcontentsbookmark); // 글 조회 - 북마크순
+    app.get('/books/:bookIdx/newest-books', jwtMiddleware,bookroom.getbookcontents); // 글 조회 - 최신순
+    app.post('/books/:bookIdx/contents/:contentsIdx/report-contents', jwtMiddleware,bookroom.postreport); // 글 신고
+    app.post('/books/:bookIdx/contents', jwtMiddleware,bookroom.postcontents); // 글 작성
+    app.patch('/books/:bookIdx/contents/:contentsIdx', jwtMiddleware,bookroom.patchcontents); // 글 수정
     app.delete('/books/:bookIdx/contents/:contentsIdx', jwtMiddleware,bookroom.deletecontents); // 글 삭제
 
-    app.patch('/contents/:contentsIdx/bookmark',jwtMiddleware,bookroom.patchContentsbookmark); //jwtMiddleware 추가하기 , 북마크 설정
-    app.get('/books/:bookIdx/contents', bookroom.searchcontents); //jwtMiddleware 추가하기 , 본문검색
+    app.patch('/contents/:contentsIdx/bookmark',jwtMiddleware,bookroom.patchContentsbookmark); // 북마크 설정 및 해제
+    app.get('/books/:bookIdx/contents', jwtMiddleware,bookroom.searchcontents); // 본문검색 - 내용
 };

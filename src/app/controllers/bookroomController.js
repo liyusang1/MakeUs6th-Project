@@ -82,7 +82,7 @@ exports.getbookroom = async function (req, res) {
         if(isEmpty(selectbookroomRow)) {
             return res.json({
                 isSuccess: false,
-                code: 4000,
+                code: 3000,
                 message: "책방이 더 이상 존재하지 않습니다."
             });
         }
@@ -144,7 +144,7 @@ exports.getbookroomPopular = async function (req, res) {
         if(isEmpty(selectbookroomPopular)) {
             return res.json({
                 isSuccess: false,
-                code: 4000,
+                code: 3000,
                 message: "책방이 더 이상 존재하지 않습니다."
             });
         }
@@ -224,8 +224,7 @@ exports.searchbookroom = async function (req, res) {
 exports.getbookcontents = async function (req, res) {
     var bookIdx = req.params['bookIdx'] //path variable
     const {page,limit} = req.query; //페이징 처리 쿼리스트링
-
-    const userIdx = req.verifiedToken;
+    const userIdx = req.verifiedToken.userIdx;
 
     //페이징 validation 처리
    if((!page) || (!limit))
@@ -242,37 +241,31 @@ exports.getbookcontents = async function (req, res) {
             code: 2002,
             message: "페이지 당 불러올 정보의 개수를 1부터 입력해주세요"
         });
+    const checkbookroomIdxRow = await bookroomDao.checkbookroomIdx(bookIdx)
+    var isEmptys = function (checkbookroomIdxRow){
+        if (checkbookroomIdxRow === "" || checkbookroomIdxRow === null || checkbookroomIdxRow === undefined || (checkbookroomIdxRow !==null && typeof checkbookroomIdxRow === 'object' && !Object.keys(checkbookroomIdxRow).length) || checkbookroomIdxRow == '{}')
+        {
+            return true
+        }
+        else{
+            return false
+        }
+    };
 
+    if (isEmptys(checkbookroomIdxRow))
+        return res.json({
+            isSuccess: false,
+            code: 3000,
+            message: "해당 책방이 존재하지 않습니다."
+        });
 
     try {
-        const [selectbookcontentsRow] = await bookroomDao.selectbookcontents(bookIdx,page,limit)
+        const selectbookroomCombine = await bookroomDao.selectbookcontents(userIdx,bookIdx,page,limit)
 
-
-        // 3. 해당 페이지 요청했을 때 값이 더이상 없는 경우(먼저 비어있는지 확인하는 함수 선언)
-        var isEmpty = function (val){
-            if (val === "" || val === null || val === undefined || (val !==null && typeof val === 'object' && !Object.keys(val).length))
-            {
-                return true
-            }
-            else{
-                return false
-            }
-        };
-
-        // 3. 해당 페이지 요청했을 때 값이 더이상 없는 경우
-        if(isEmpty(selectbookcontentsRow)) {
-            return res.json({
-                isSuccess: false,
-                code: 4000,
-                message: "글이 더 이상 존재하지 않습니다."
-            });
-        }
-
-
-        if (selectbookcontentsRow) {
+        if (selectbookroomCombine) {
             const [updateviewCountRow] = await bookroomDao.updateviewCount(bookIdx) // 글 조회가 되면 viewCount+1 쿼리 실행
             return res.json({
-                result:selectbookcontentsRow,
+                result:selectbookroomCombine,
                 isSuccess: true,
                 code: 1000,
                 message: "글 최신순 조회 성공입니다."
@@ -295,7 +288,7 @@ exports.getbookcontentsbookmark = async function (req, res) {
     var bookIdx = req.params['bookIdx'] //path variable
     const {page,limit} = req.query; //페이징 처리 쿼리스트링
 
-    const userIdx = req.verifiedToken;
+    const userIdx = req.verifiedToken.userIdx;
 
     //페이징 validation 처리
     if((!page) || (!limit))
@@ -312,36 +305,34 @@ exports.getbookcontentsbookmark = async function (req, res) {
             code: 2002,
             message: "페이지 당 불러올 정보의 개수를 1부터 입력해주세요"
         });
+    const checkbookroomIdxRow = await bookroomDao.checkbookroomIdx(bookIdx)
+    var isEmptys = function (checkbookroomIdxRow){
+        if (checkbookroomIdxRow === "" || checkbookroomIdxRow === null || checkbookroomIdxRow === undefined || (checkbookroomIdxRow !==null && typeof checkbookroomIdxRow === 'object' && !Object.keys(checkbookroomIdxRow).length) || checkbookroomIdxRow == '{}')
+        {
+            return true
+        }
+        else{
+            return false
+        }
+    };
+
+    if (isEmptys(checkbookroomIdxRow))
+        return res.json({
+            isSuccess: false,
+            code: 3000,
+            message: "해당 책방이 존재하지 않습니다."
+        });
 
 
     try {
-        const [selectbookcontentsbookmarkRow] = await bookroomDao.selectbookcontentsbookmark(bookIdx,page,limit)
 
-        // 3. 해당 페이지 요청했을 때 값이 더이상 없는 경우(먼저 비어있는지 확인하는 함수 선언)
+        const selectbookroomCombine = await bookroomDao.selectbookcontentsbookmark(userIdx,bookIdx,page,limit)
 
-        var isEmpty = function (checkContentsContentsIdxRow){
-            if (checkContentsContentsIdxRow === "" ||checkContentsContentsIdxRow === null || checkContentsContentsIdxRow === undefined || (checkContentsContentsIdxRow !==null && typeof checkContentsContentsIdxRow === 'object' && !Object.keys(checkContentsContentsIdxRow).length))
-            {
-                return true
-            }
-            else{
-                return false
-            }
-        };
-
-        // 3. 해당 페이지 요청했을 때 값이 더이상 없는 경우
-        if(isEmpty(selectbookcontentsbookmarkRow)) {
-            return res.json({
-                isSuccess: false,
-                code: 4000,
-                message: "글이 더 이상 존재하지 않습니다."
-            });
-        }
-
-        if (selectbookcontentsbookmarkRow) {
+        if (selectbookroomCombine) {
             const [updateviewCountRow] = await bookroomDao.updateviewCount(bookIdx) // 글 조회가 되면 viewCount+1 쿼리 실행
+
             return res.json({
-                result:selectbookcontentsbookmarkRow,
+                result:selectbookroomCombine,
                 isSuccess: true,
                 code: 1000,
                 message: "글 북마크순 조회 성공입니다."
@@ -429,7 +420,7 @@ exports.patchcontents = async function (req, res) {
     if (isEmptys(checkbookroomIdxRow))
         return res.json({
             isSuccess: false,
-            code: 2003,
+            code: 3000,
             message: "해당 책방이 존재하지 않습니다."
         });
 
@@ -448,7 +439,7 @@ exports.patchcontents = async function (req, res) {
     if (isEmpty(checkContentsContentsIdxRow))
         return res.json({
             isSuccess: false,
-            code: 2004,
+            code: 3001,
             message: "해당 글이 존재하지 않습니다."
         });
 
@@ -460,7 +451,7 @@ exports.patchcontents = async function (req, res) {
         if (userIdx != checkContentsUserIdxRow)
             return res.json({
                 isSuccess: false,
-                code: 2002,
+                code: 3002,
                 message: "당신의 유저 인덱스 번호와 글을 작성한 유저 인덱스 번호가 일치하지 않습니다."
             });
 
@@ -505,7 +496,7 @@ exports.deletecontents = async function (req, res) {
     if (isEmptys(checkbookroomIdxRow))
         return res.json({
             isSuccess: false,
-            code: 2003,
+            code: 3000,
             message: "해당 책방이 존재하지 않습니다."
         });
 
@@ -524,16 +515,16 @@ exports.deletecontents = async function (req, res) {
     if (isEmpty(checkContentsContentsIdxRow))
         return res.json({
             isSuccess: false,
-            code: 2004,
+            code: 3001,
             message: "해당 글이 존재하지 않습니다."
         });
 
     const checkContentsUserIdxRow = await bookroomDao.checkContentsUserIdx(bookIdx,contentsIdx)
 
-    if (userIdx != checkContentsUserIdxRow)
+        if (userIdx != checkContentsUserIdxRow)
         return res.json({
             isSuccess: false,
-            code: 2002,
+            code: 3002,
             message: "당신의 유저 인덱스 번호와 글을 작성한 유저 인덱스 번호가 일치하지 않습니다."
         });
 
@@ -560,7 +551,7 @@ exports.deletecontents = async function (req, res) {
 
 // . 본문 검색 - 내용
 exports.searchcontents = async function (req, res) {
-
+    const userIdx = req.verifiedToken.userIdx;
     var bookIdx = req.params['bookIdx'];
     const {contents} = req.query;
 
@@ -580,7 +571,7 @@ exports.searchcontents = async function (req, res) {
     if (checkContentsRow == '0')
         return res.json({
             isSuccess: false,
-            code: 2002,
+            code: 3000,
             message: "해당 책방에 대한 본문 내용이 존재하지 않습니다."
         });
 
@@ -620,7 +611,7 @@ exports.postreport = async function (req, res) {
         return res.json({
             isSuccess: false,
             code: 2001,
-            message: "수정할 내용을 입력해주세요."
+            message: "신고 사유를 입력해주세요."
         });
 
     const checkbookroomIdxRow = await bookroomDao.checkbookroomIdx(bookIdx)
@@ -637,7 +628,7 @@ exports.postreport = async function (req, res) {
     if (isEmptys(checkbookroomIdxRow))
         return res.json({
             isSuccess: false,
-            code: 2003,
+            code: 3000,
             message: "해당 책방이 존재하지 않습니다."
         });
 
@@ -656,16 +647,23 @@ exports.postreport = async function (req, res) {
     if (isEmpty(checkContentsContentsIdxRow))
         return res.json({
             isSuccess: false,
-            code: 2004,
+            code: 3001,
             message: "해당 글이 존재하지 않습니다."
         });
 
     try {
         const checkContentsUserIdxRow = await bookroomDao.checkContentsUserIdx(bookIdx,contentsIdx)
+        if (checkContentsUserIdxRow == 0)
+            return res.json({
+                isSuccess: false,
+                code: 3002,
+                message: "해당 책방 인덱스 번호와 글 인덱스 번호가 일치하지 않습니다.(행 불일치)"
+            });
+
         if (userIdx == checkContentsUserIdxRow)
             return res.json({
                 isSuccess: false,
-                code: 2002,
+                code: 3003,
                 message: "당신의 유저 인덱스 번호와 글을 작성한 유저 인덱스 번호가 일치하여 신고가 불가능합니다."
             });
 
@@ -674,10 +672,6 @@ exports.postreport = async function (req, res) {
         const targetUserIdx = getTargetUserIdxRow;
 
         const [insertreportRow] = await bookroomDao.insertreport(contentsIdx,userIdx,targetUserIdx,reportReason)
-
-
-
-
 
         if (insertreportRow) {
             return res.json({
@@ -689,7 +683,7 @@ exports.postreport = async function (req, res) {
         return res.json({
             isSuccess: false,
             code: 2000,
-            message: "글 수정을 실패하였습니다."
+            message: "글 신고를 실패하였습니다."
         });
     } catch (err) {
         logger.error(`App - postreport Query error\n: ${JSON.stringify(err)}`);
@@ -719,22 +713,19 @@ exports. patchContentsbookmark = async function (req, res) {
     if (isEmpty(checkContentsContentsIdxRow))
         return res.json({
             isSuccess: false,
-            code: 2004,
+            code: 3001,
             message: "해당 글이 존재하지 않습니다."
         });
-
-
 
     try {
         const [checkbookmarkRow] = await bookroomDao.checkbookmark(userIdx,contentsIdx)
 
         if (checkbookmarkRow.length == 0){
-
             const [insertbookmarkRow] = await bookroomDao.insertbookmark(userIdx,contentsIdx)
             return res.json({
                 isSuccess: true,
                 code: 1000,
-                message: "뷱마크 생성 완료"
+                message: "북마크가 추가되었습니다."
             });
         }
 else {
@@ -743,13 +734,13 @@ else {
                 return res.json({
                     isSuccess: true,
                     code: 1001,
-                    message: "북마크 설정(on)"
+                    message: "북마크 설정(ON)"
                 });
             } else if (checkbookmarkRow[0].status == 1) {
                 return res.json({
                     isSuccess: true,
                     code: 1002,
-                    message: "북마크 해제(off)"
+                    message: "북마크 해제(OFF)"
                 });
             }
         }
@@ -761,7 +752,7 @@ else {
     } catch (err) {
         logger.error(`App - patchContentsbookmark Query error\n: ${JSON.stringify(err)}`);
         return false;
-    };
+    }
 };
 
 

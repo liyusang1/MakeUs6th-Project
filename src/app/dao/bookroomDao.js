@@ -98,49 +98,78 @@ async function updateviewCount(bookIdx) {
 
 
 // 6. 글 조회 - 최신순
-async function selectbookcontents(bookIdx,page,limit) {
+async function selectbookcontents(userIdx,bookIdx,page,limit) {
   const connection = await pool.getConnection(async (conn) => conn);
   const selectbookcontentsQuery = `
-    select Users.userIdx, ifnull(userImgUrl,-1) as userImgUrl, nickname, date_format(Community.createdAt,'%Y.%m.%d') as createAt,contents
+    select Community.contentsIdx,Users.userIdx, ifnull(userImgUrl,-1) as userImgUrl, nickname, contents,date_format(Community.createdAt,'%Y.%m.%d') as createdAt,
+          ifnull(isBookMark,0) as isBookMark
     from Community
            inner join Users on Users.userIdx = Community.userIdx
+           left outer join (select communityBookMarkIdx,CommunityBookMark.contentsIdx, count(*) as isBookMark from CommunityBookMark where userIdx = ? and status = 1
+                            group by communityBookMarkIdx) BookMark on Community.contentsIdx = BookMark.contentsIdx
     where bookIdx = ?
     order by Community.createdAt desc
     limit ?,?;
     `;
+  const selectbookroomNameQuery = `
+    select bookName
+    from Book
+    where bookIdx=?
+    `;
 
-  const selectbookcontentsParams = [bookIdx,Number(page),Number(limit)];
-  const selectbookcontentsRow = await connection.query(
+  const selectbookcontentsParams = [userIdx,bookIdx,Number(page),Number(limit)];
+  const selectbookroomNameParams = [bookIdx];
+  const [selectbookcontentsRow] = await connection.query(
       selectbookcontentsQuery,
       selectbookcontentsParams
   );
 
+  const [selectbookroomNameRow] = await connection.query(
+      selectbookroomNameQuery,
+      selectbookroomNameParams
+  );
+  const selectbookroomCombine = selectbookroomNameRow.concat(selectbookcontentsRow);
   connection.release();
-  return selectbookcontentsRow;
+  return selectbookroomCombine;
 }
 
 
 
 
 // 6. 글 조회 - 북마크순
-async function selectbookcontentsbookmark(bookIdx,page,limit) {
+async function selectbookcontentsbookmark(userIdx,bookIdx,page,limit) {
   const connection = await pool.getConnection(async (conn) => conn);
   const selectbookcontentsbookmarkQuery = `
-    select  bookIdx,Community.contentsIdx,CommunityBookMark.status,Users.userIdx, ifnull(userImgUrl,-1) as userImgUrl, nickname, date_format(Community.createdAt,'%Y.%m.%d') as createAt,contents
+    select  Community.contentsIdx,Users.userIdx, ifnull(userImgUrl,-1) as userImgUrl,nickname,contents,date_format(Community.createdAt,'%Y.%m.%d') as createdAt,ifnull(isBookMark,0) as isBookMark
     from CommunityBookMark
-           left join Community on Community.contentsIdx = CommunityBookMark.contentsIdx
+           inner join Community on Community.contentsIdx = CommunityBookMark.contentsIdx
            left join Users on Users.userIdx = Community.userIdx
-    where CommunityBookMark.status=1 and bookIdx=?
+           left outer join (select communityBookMarkIdx,CommunityBookMark.contentsIdx, count(*) as isBookMark from CommunityBookMark where userIdx = ? and status = 1
+                            group by communityBookMarkIdx) BookMark on Community.contentsIdx = BookMark.contentsIdx
+    where Community.bookIdx =? and CommunityBookMark.status=1
+    group by CommunityBookMark.contentsIdx
+    order by count(CommunityBookMark.contentsIdx) desc
       limit ?,?;
     `;
+  const selectbookroomNameQuery = `
+    select bookName
+    from Book
+    where bookIdx=?
+    `;
+  const selectbookcontentsbookmarkParams = [userIdx,bookIdx,Number(page),Number(limit)];
+  const selectbookroomNameParams = [bookIdx];
 
-  const selectbookcontentsbookmarkParams = [bookIdx,Number(page),Number(limit)];
-  const selectbookcontentsbookmarkRow = await connection.query(
+  const [selectbookcontentsbookmarkRow] = await connection.query(
       selectbookcontentsbookmarkQuery,
       selectbookcontentsbookmarkParams
   );
+  const [selectbookroomNameRow] = await connection.query(
+      selectbookroomNameQuery,
+      selectbookroomNameParams
+  );
+  const selectbookroomCombine = selectbookroomNameRow.concat(selectbookcontentsbookmarkRow);
   connection.release();
-  return selectbookcontentsbookmarkRow;
+  return  selectbookroomCombine;
 }
 
 // . 글 작성
@@ -363,6 +392,22 @@ where userIdx =? and contentsIdx=?;
   return updatebookmarkRow;
 }
 
+// bookname 나타내기
+async function selectbookroomName(bookIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const selectbookroomNameQuery = `
+    select bookName
+    from Book
+    where bookIdx=?
+    `;
+  const selectbookroomNameParams = [bookIdx];
+  const [selectbookroomNameRow] = await connection.query(
+      selectbookroomNameQuery,
+      selectbookroomNameParams
+  );
+  connection.release();
+  return selectbookroomNameRow;
+}
 
 module.exports = {
   insertbookroom, // 1. 책방 만들기
@@ -384,5 +429,6 @@ module.exports = {
   getTargetUserIdx,
   checkbookmark,
   insertbookmark,
-  updatebookmark
+  updatebookmark,
+  selectbookroomName
 };
