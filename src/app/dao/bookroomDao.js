@@ -140,15 +140,28 @@ async function selectbookcontents(userIdx,bookIdx,page,limit) {
 async function selectbookcontentsbookmark(userIdx,bookIdx,page,limit) {
   const connection = await pool.getConnection(async (conn) => conn);
   const selectbookcontentsbookmarkQuery = `
-    select  Community.contentsIdx,Users.userIdx, ifnull(userImgUrl,-1) as userImgUrl,nickname,contents,date_format(Community.createdAt,'%Y.%m.%d') as createdAt,ifnull(isBookMark,0) as isBookMark
-    from CommunityBookMark
-           inner join Community on Community.contentsIdx = CommunityBookMark.contentsIdx
-           left join Users on Users.userIdx = Community.userIdx
-           left outer join (select communityBookMarkIdx,CommunityBookMark.contentsIdx, count(*) as isBookMark from CommunityBookMark where userIdx = ? and status = 1
-                            group by communityBookMarkIdx) BookMark on Community.contentsIdx = BookMark.contentsIdx
-    where Community.bookIdx =? and CommunityBookMark.status=1
-    group by CommunityBookMark.contentsIdx
-    order by count(CommunityBookMark.contentsIdx) desc
+    select distinct Community.contentsIdx,Users.userIdx, ifnull(userImgUrl,-1) as userImgUrl,nickname,contents,ifnull(bookMarkCount,0) as bookMarkCount,
+
+                    CASE
+                      WHEN TIMESTAMPDIFF(HOUR, Community.createdAt, now()) > 23
+                        THEN IF(TIMESTAMPDIFF(DAY, Community.createdAt, now()) > 7, date_format(Community.createdAt, '%Y-%m-%d'),
+                                concat(TIMESTAMPDIFF(DAY, Community.createdAt, now()), " 일 전"))
+                      WHEN TIMESTAMPDIFF(HOUR, Community.createdAt, now()) < 1
+                        THEN concat(TIMESTAMPDIFF(MINUTE, Community.createdAt, now()), " 분 전")
+                      ELSE concat(TIMESTAMPDIFF(HOUR, Community.createdAt, now()), " 시간 전")
+                      END AS createdAt,
+
+                    ifnull(isBookMark,0) as isBookMark from Community
+
+                                                              inner join Users on Users.userIdx = Community.userIdx
+                                                              left outer join (select communityBookMarkIdx,CommunityBookMark.contentsIdx, count(*) as isBookMark from CommunityBookMark where userIdx = ? and status = 1
+                                                                               group by communityBookMarkIdx) BookMark on Community.contentsIdx = BookMark.contentsIdx
+
+                                                              left outer join (select contentsIdx, count(*) as bookMarkCount from CommunityBookMark where status = 1
+                                                                               group by contentsIdx) BookMarkCount on Community.contentsIdx = BookMarkCount.contentsIdx
+
+    where Community.bookIdx = ? and Community.status = 1
+    order by bookMarkCount desc
       limit ?,?;
     `;
   const selectbookroomNameQuery = `

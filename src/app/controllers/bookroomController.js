@@ -201,6 +201,26 @@ exports.searchbookroom = async function (req, res) {
     try {
         const searchbookroomRow = await bookroomDao.searchbookroom(bookName,page,limit)
 
+// 검색했을 때 검색값이 안나오는 경우 validation
+        var isEmpty = function (searchbookroomRow){
+            if (searchbookroomRow === "" || searchbookroomRow === null || searchbookroomRow === undefined || (searchbookroomRow !==null && typeof searchbookroomRow === 'object' && !Object.keys(searchbookroomRow).length))
+            {
+                return true
+            }
+            else{
+                return false
+            }
+        };
+
+        // 3. 해당 페이지 요청했을 때 값이 더이상 없는 경우
+        if(isEmpty(searchbookroomRow)) {
+            return res.json({
+                isSuccess: false,
+                code: 3000,
+                message: "검색한 단어가 포함된 책방이 존재하지 않습니다."
+            });
+        }
+
         if (searchbookroomRow) {
             return res.json({
                 result:searchbookroomRow,
@@ -581,7 +601,6 @@ exports.searchcontents = async function (req, res) {
             code: 2003,
             message: "본문 내용을 입력해주세요."
         });
-
 
     const checkContentsRow= await bookroomDao.checkContents(bookIdx,contents)
     //console.log(checkContentsRow);
