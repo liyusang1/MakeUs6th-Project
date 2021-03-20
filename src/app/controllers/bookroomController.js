@@ -555,12 +555,30 @@ exports.searchcontents = async function (req, res) {
     var bookIdx = req.params['bookIdx'];
     const {contents} = req.query;
 
+    const {page,limit} = req.query;
+
+    //페이징 validation 처리
+    if((!page) || (!limit))
+        return res.json({
+            isSuccess: false,
+            code: 2001,
+            message: "page와 limit을 입력해 주세요."
+        });
+
+    // 2. limit 값은 1부터 시작
+    if (limit < 1)
+        return res.json({
+            isSuccess: false,
+            code: 2002,
+            message: "페이지 당 불러올 정보의 개수를 1부터 입력해주세요"
+        });
+
 
     //내용 값을 입력하지 않았을 때
     if (contents.length<1)
         return res.json({
             isSuccess: false,
-            code: 2001,
+            code: 2003,
             message: "본문 내용을 입력해주세요."
         });
 
@@ -576,7 +594,7 @@ exports.searchcontents = async function (req, res) {
         });
 
     try {
-        const searchcontentsRow = await bookroomDao.searchcontents(bookIdx,contents)
+        const searchcontentsRow = await bookroomDao.searchcontents(bookIdx,contents,page,limit)
 
         if (searchcontentsRow) {
             return res.json({

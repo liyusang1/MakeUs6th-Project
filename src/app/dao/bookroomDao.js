@@ -273,17 +273,18 @@ async function deletecontents(userIdx,bookIdx,contentsIdx) {
 }
 
 // . 본문 검색 - 내용
-async function searchcontents(bookIdx,contents) {
+async function searchcontents(bookIdx,contents,page,limit) {
   const connection = await pool.getConnection(async (conn) => conn);
   const searchcontentsQuery = `
-    select contentsIdx, bookIdx, Community.userIdx,userimgUrl, nickname,
+    select bookIdx,contentsIdx, Community.userIdx,ifnull(userimgUrl,-1), nickname,
            date_format(Community.createdAt,'%Y.%m.%d') as createdAt, contents
     from Community
            inner join Users on Users.userIdx = Community.userIdx
-    where bookIdx=? and contents like concat('%',?,'%');
+    where bookIdx=? and contents like concat('%',?,'%')
+    limit ?,?;
     `;
 
-  const searchcontentsParams = [bookIdx,contents];
+  const searchcontentsParams = [bookIdx,contents,Number(page),Number(limit)];
   const [searchcontentsRow] = await connection.query(
       searchcontentsQuery,
       searchcontentsParams
