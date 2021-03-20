@@ -101,8 +101,16 @@ async function updateviewCount(bookIdx) {
 async function selectbookcontents(userIdx,bookIdx,page,limit) {
   const connection = await pool.getConnection(async (conn) => conn);
   const selectbookcontentsQuery = `
-    select Community.contentsIdx,Users.userIdx, ifnull(userImgUrl,-1) as userImgUrl, nickname, contents,date_format(Community.createdAt,'%Y.%m.%d') as createdAt,
-          ifnull(isBookMark,0) as isBookMark
+    select Community.contentsIdx,Users.userIdx, ifnull(userImgUrl,-1) as userImgUrl, nickname, contents,
+           CASE
+             WHEN TIMESTAMPDIFF(HOUR, Community.createdAt, now()) > 23
+               THEN IF(TIMESTAMPDIFF(DAY, Community.createdAt, now()) > 7, date_format(Community.createdAt, '%Y.%m.%d'),
+                       concat(TIMESTAMPDIFF(DAY, Community.createdAt, now()), " 일 전"))
+             WHEN TIMESTAMPDIFF(HOUR, Community.createdAt, now()) < 1
+               THEN concat(TIMESTAMPDIFF(MINUTE, Community.createdAt, now()), " 분 전")
+             ELSE concat(TIMESTAMPDIFF(HOUR, Community.createdAt, now()), " 시간 전")
+             END AS createdAt,
+           ifnull(isBookMark,0) as isBookMark
     from Community
            inner join Users on Users.userIdx = Community.userIdx
            left outer join (select communityBookMarkIdx,CommunityBookMark.contentsIdx, count(*) as isBookMark from CommunityBookMark where userIdx = ? and status = 1
@@ -144,7 +152,7 @@ async function selectbookcontentsbookmark(userIdx,bookIdx,page,limit) {
 
                     CASE
                       WHEN TIMESTAMPDIFF(HOUR, Community.createdAt, now()) > 23
-                        THEN IF(TIMESTAMPDIFF(DAY, Community.createdAt, now()) > 7, date_format(Community.createdAt, '%Y-%m-%d'),
+                        THEN IF(TIMESTAMPDIFF(DAY, Community.createdAt, now()) > 7, date_format(Community.createdAt, '%Y.%m.%d'),
                                 concat(TIMESTAMPDIFF(DAY, Community.createdAt, now()), " 일 전"))
                       WHEN TIMESTAMPDIFF(HOUR, Community.createdAt, now()) < 1
                         THEN concat(TIMESTAMPDIFF(MINUTE, Community.createdAt, now()), " 분 전")
