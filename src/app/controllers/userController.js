@@ -514,6 +514,9 @@ exports.patchUserStatus = async function (req, res) {
 //특정 bookIdx에서 내가 쓴 글만 조회 하는 기능
 exports.getUserWriting = async function (req, res) {
 
+    //page,limit 
+    const {page,limit} = req.query;
+
     //유저인덱스
     const {userIdx} = req.verifiedToken;
 
@@ -527,6 +530,12 @@ exports.getUserWriting = async function (req, res) {
       message: "bookIdx는 숫자로 입력해야 합니다.",
     });
 
+    if((!page) || (!limit)) return res.json({
+        isSuccess: false,
+        code: 2002,
+        message: "page와 limit을 입력해 주세요.",
+      });
+     
          try {
              
              const checkBookIdxRows = await userDao.checkBookIdx(bookIdx);
@@ -537,7 +546,7 @@ exports.getUserWriting = async function (req, res) {
                 message: "해당하는 인덱스의 책이 존재 하지 않습니다."
             });
 
-            const getUserWritingParams = [userIdx,bookIdx,userIdx];
+            const getUserWritingParams = [userIdx,bookIdx,userIdx,Number(page),Number(limit)];
 
             //유저가 쓴글을 가져옴
             const getUserWritingInfoRows = await userDao.getUserWritingInfo(getUserWritingParams);

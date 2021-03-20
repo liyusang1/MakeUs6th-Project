@@ -272,7 +272,8 @@ async function getUserWritingInfo(getUserWritingParams) {
        on Community.contentsIdx = BookMark.contentsIdx
 
        where bookIdx = ? and Users.userIdx = ? and Community.status = 1
-       order by Community.createdAt desc ;
+       order by Community.createdAt desc
+       limit ?,? ;
 
                 `;
 
