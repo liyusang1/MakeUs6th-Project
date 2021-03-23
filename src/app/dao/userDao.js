@@ -93,7 +93,7 @@ async function getUserWriting(userIdx) {
   
    select distinct Community.bookIdx,bookName from Community
          inner join Book on Community.bookIdx = Book.bookIdx
-         where userIdx = ? and Community.status = 1 and Book.status =1
+         where Community.userIdx = ? and Community.status = 1 and Book.status =1
          order by Community.updatedAt desc;
 
                 `;
