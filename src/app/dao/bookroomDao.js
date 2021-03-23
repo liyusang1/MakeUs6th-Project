@@ -94,9 +94,6 @@ async function updateviewCount(bookIdx) {
 }
 
 
-
-
-
 // 6. 글 조회 - 최신순
 async function selectbookcontents(userIdx,bookIdx,page,limit) {
   const connection = await pool.getConnection(async (conn) => conn);
@@ -431,6 +428,22 @@ async function checkPostBookRoom(userIdx) {
   return checkPostBookRoomRow[0]['count(createdAt)'];
 }
 
+//중복된 책방 검사
+async function checkBookName(bookName) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const checkBookNameQuery = `
+    
+  select bookIdx from Book where bookName=?
+
+    `;
+  const [checkPostBookRoomRow] = await connection.query(
+    checkBookNameQuery,
+      bookName
+  );
+  connection.release();
+  return checkPostBookRoomRow;
+}
+
 module.exports = {
   insertbookroom, // 1. 책방 만들기
   selectbookroom, // 2. 책방 리스트 조회 - 최신순
@@ -452,5 +465,6 @@ module.exports = {
   checkbookmark,
   insertbookmark,
   updatebookmark,
-  checkPostBookRoom
+  checkPostBookRoom,
+  checkBookName
 };
