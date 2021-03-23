@@ -2,13 +2,13 @@ const { pool } = require("../../../config/database");
 
 /** 홈화면 **/
 // 1. 책방 만들기
-async function insertbookroom(bookName,authorName,bookImgUrl) {
+async function insertbookroom(bookName,authorName,bookImgUrl,userIdx) {
   const connection = await pool.getConnection(async (conn) => conn);
   const insertbookroomQuery = `
-    insert into Book(bookName,authorName,bookImgUrl)
-    values (?,?,?);
+    insert into Book(bookName,authorName,bookImgUrl,userIdx)
+    values (?,?,?,?);
     `;
-  const insertbookroomParams = [bookName,authorName,bookImgUrl];
+  const insertbookroomParams = [bookName,authorName,bookImgUrl,userIdx];
   const insertbookroomRow = await connection.query(
       insertbookroomQuery,
       insertbookroomParams
@@ -414,21 +414,21 @@ where userIdx =? and contentsIdx=?;
   return updatebookmarkRow;
 }
 
-// bookname 나타내기
-async function selectbookroomName(bookIdx) {
+// 하루에 ^다섯개 이상^ 책방 만들기 금지
+async function checkPostBookRoom(userIdx) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const selectbookroomNameQuery = `
-    select bookName
+  const checkPostBookRoomQuery = `
+    select count(createdAt)
     from Book
-    where bookIdx=?
+    where userIdx=? and createdAt > curdate();
     `;
-  const selectbookroomNameParams = [bookIdx];
-  const [selectbookroomNameRow] = await connection.query(
-      selectbookroomNameQuery,
-      selectbookroomNameParams
+  const checkPostBookRoomParams = [userIdx];
+  const [checkPostBookRoomRow] = await connection.query(
+      checkPostBookRoomQuery,
+      checkPostBookRoomParams
   );
   connection.release();
-  return selectbookroomNameRow;
+  return checkPostBookRoomRow[0]['count(createdAt)'];
 }
 
 module.exports = {
@@ -452,5 +452,5 @@ module.exports = {
   checkbookmark,
   insertbookmark,
   updatebookmark,
-  selectbookroomName
+  checkPostBookRoom
 };

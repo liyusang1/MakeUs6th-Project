@@ -13,7 +13,7 @@ const { constants } = require('buffer');
 /** 홈화면 **/
 // 1. 책방 만들기
 exports.postbookroom = async function (req, res) {
-    const userIdx = req.verifiedToken;
+    const userIdx = req.verifiedToken.userIdx;
     const {
         bookName,authorName,bookImgUrl
     } = req.body;
@@ -22,8 +22,18 @@ exports.postbookroom = async function (req, res) {
     if (!authorName) return res.json({isSuccess: false, code: 2001, message: "저자를 입력해주세요."});
     if (!bookImgUrl) return res.json({isSuccess: false, code: 2002, message: "책 표지 사진을 첨부해주세요."});
 
+
+
     try {
-        const [insertbookroomRow] = await bookroomDao.insertbookroom(bookName,authorName,bookImgUrl)
+        const checkPostBookRoomRow = await bookroomDao.checkPostBookRoom(userIdx)
+        if (checkPostBookRoomRow>=5)
+            return res.json({
+                isSuccess: false,
+                code: 3000,
+                message: "(하루에) 5개 이상 책방을 등록할 수 없습니다."});
+
+        const [insertbookroomRow] = await bookroomDao.insertbookroom(bookName,authorName,bookImgUrl,userIdx)
+
 
         if (insertbookroomRow) {
             return res.json({
@@ -791,6 +801,9 @@ else {
         return false;
     }
 };
+
+
+
 
 
 
