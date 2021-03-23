@@ -30,7 +30,7 @@ exports.postbookroom = async function (req, res) {
             return res.json({
                 isSuccess: false,
                 code: 3000,
-                message: "(하루에) 5개 이상 책방을 등록할 수 없습니다."});
+                message: "하루에 6개 이상 책방을 등록할 수 없습니다."});
 
         const [insertbookroomRow] = await bookroomDao.insertbookroom(bookName,authorName,bookImgUrl,userIdx)
 
