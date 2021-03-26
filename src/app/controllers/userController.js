@@ -163,7 +163,8 @@ exports.signIn = async function (req, res) {
                 jwt: token,
                 isSuccess: true,
                 code: 1000,
-                message: "로그인 성공 : "+userInfoRows[0].nickname
+                message: "로그인 성공 : "+userInfoRows[0].nickname,
+                userIdx : userInfoRows[0].userIdx
             });
             
         } catch (err) {
