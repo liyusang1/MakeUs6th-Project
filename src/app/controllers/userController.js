@@ -720,7 +720,7 @@ exports.findPassword = async function (req, res) {
               subject: 'Binding에서 ' + userInfoRows[0].nickname+ '님께 임시비밀번호를 알려드립니다.',
               html: 
               "<h1 >Binding에서 새로운 비밀번호를 알려드립니다.</h1> <h2> 비밀번호 : " + randomPassword + "</h2>"
-              +'<h3 style="color: #dc143c;">임시 비밀번호로 로그인 하신 후, 반드시 비밀번호를 수정해 주세요.</h3>'
+              +'<h3 style="color: crimson;">임시 비밀번호로 로그인 하신 후, 반드시 비밀번호를 수정해 주세요.</h3>'
               +'<img src="https://firebasestorage.googleapis.com/v0/b/mangoplate-a1a46.appspot.com/o/mailImg.png?alt=media&token=75e07db2-5aa6-4cb2-809d-776ba037fdec">'		
               ,
             };

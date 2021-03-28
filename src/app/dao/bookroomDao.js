@@ -242,8 +242,7 @@ async function checkContentsContentsIdx(contentsIdx) {
 async function checkbookroomIdx(bookIdx) {
   const connection = await pool.getConnection(async (conn) => conn);
   const checkbookroomIdxQuery = `
-    select bookIdx from Book
-    where Book.bookIdx=?;
+    select bookIdx from Book where Book.bookIdx=?;
     `;
   const checkbookroomIdxParams = [bookIdx];
   const [checkbookroomIdxRow] = await connection.query(
