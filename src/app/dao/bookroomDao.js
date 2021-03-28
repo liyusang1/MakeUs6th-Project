@@ -245,8 +245,7 @@ async function checkContentsContentsIdx(contentsIdx) {
 async function checkbookroomIdx(bookIdx) {
   const connection = await pool.getConnection(async (conn) => conn);
   const checkbookroomIdxQuery = `
-    select Community.bookIdx from Community
-                                    inner join Book on Book.bookIdx = Community.bookIdx
+    select bookIdx from Book
     where Book.bookIdx=?;
     `;
   const checkbookroomIdxParams = [bookIdx];

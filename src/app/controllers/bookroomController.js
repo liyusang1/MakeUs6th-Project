@@ -78,8 +78,8 @@ exports.getbookroom = async function (req, res) {
         const [selectbookroomRow] = await bookroomDao.selectbookroom(page,limit)
 
         // 3. 해당 페이지 요청했을 때 값이 더이상 없는 경우(먼저 비어있는지 확인하는 함수 선언)
-        var isEmpty = function (val){
-            if (val === "" || val === null || val === undefined || (val !==null && typeof val === 'object' && !Object.keys(val).length))
+        var isEmpty = function (selectbookroomRow){
+            if (selectbookroomRow === "" || selectbookroomRow === null || selectbookroomRow === undefined || (selectbookroomRow !==null && typeof selectbookroomRow === 'object' && !Object.keys(selectbookroomRow).length))
             {
                 return true
             }
@@ -140,8 +140,8 @@ exports.getbookroomPopular = async function (req, res) {
         const selectbookroomPopular = await bookroomDao.selectbookroomPopular(page,limit)
 
         // 3. 해당 페이지 요청했을 때 값이 더이상 없는 경우(먼저 비어있는지 확인하는 함수 선언)
-        var isEmpty = function (val){
-            if (val === "" || val === null || val === undefined || (val !==null && typeof val === 'object' && !Object.keys(val).length))
+        var isEmpty = function (selectbookroomPopular){
+            if (selectbookroomPopular === "" || selectbookroomPopular === null || selectbookroomPopular === undefined || (selectbookroomPopular !==null && typeof selectbookroomPopular === 'object' && !Object.keys(selectbookroomPopular).length))
             {
                 return true
                 }
@@ -335,6 +335,7 @@ exports.getbookcontentsbookmark = async function (req, res) {
             code: 2002,
             message: "페이지 당 불러올 정보의 개수를 1부터 입력해주세요"
         });
+
     const checkbookroomIdxRow = await bookroomDao.checkbookroomIdx(bookIdx)
     var isEmptys = function (checkbookroomIdxRow){
         if (checkbookroomIdxRow === "" || checkbookroomIdxRow === null || checkbookroomIdxRow === undefined || (checkbookroomIdxRow !==null && typeof checkbookroomIdxRow === 'object' && !Object.keys(checkbookroomIdxRow).length) || checkbookroomIdxRow == '{}')
