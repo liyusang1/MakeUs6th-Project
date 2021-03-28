@@ -40,4 +40,7 @@ module.exports = function(app){
 
     //비밀번호 찾기
     app.post('/find-password',user.findPassword);
+
+    //프로필 변경
+    app.patch('/users/profile',jwtMiddleware,user.patchProfile);
 };
