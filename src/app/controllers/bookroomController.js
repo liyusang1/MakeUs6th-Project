@@ -22,6 +22,9 @@ exports.postbookroom = async function (req, res) {
     if (!authorName) return res.json({isSuccess: false, code: 2001, message: "저자를 입력해주세요."});
     if (!bookImgUrl) return res.json({isSuccess: false, code: 2002, message: "책 표지 사진을 첨부해주세요."});
 
+    if (bookName.length > 20 ) return res.json({isSuccess: false, code: 2003, message: "책 이름은 20자 이하로 작성하여야 합니다."});
+
+
     const checkBookNameRow = await bookroomDao.checkBookName(bookName)
     if(checkBookNameRow.length != 0)
     return res.json({
