@@ -42,9 +42,10 @@ exports.postbookroom = async function (req, res) {
 
         const [insertbookroomRow] = await bookroomDao.insertbookroom(bookName,authorName,bookImgUrl,userIdx)
 
-        //책방 idx를 제공함
+        //책방 idx를 제공함 2021-03-20
         const findBookIdParams = [bookName,authorName,bookImgUrl,userIdx];
         const findBookroomRows = await bookroomDao.findBookroom(findBookIdParams)
+        //
 
         if (insertbookroomRow) {
             return res.json({
@@ -88,19 +89,8 @@ exports.getbookroom = async function (req, res) {
     try {
         const [selectbookroomRow] = await bookroomDao.selectbookroom(page,limit)
 
-        // 3. 해당 페이지 요청했을 때 값이 더이상 없는 경우(먼저 비어있는지 확인하는 함수 선언)
-        var isEmpty = function (selectbookroomRow){
-            if (selectbookroomRow === "" || selectbookroomRow === null || selectbookroomRow === undefined || (selectbookroomRow !==null && typeof selectbookroomRow === 'object' && !Object.keys(selectbookroomRow).length))
-            {
-                return true
-            }
-            else{
-                return false
-            }
-        };
-
         // 3. 해당 페이지 요청했을 때 값이 더이상 없는 경우
-        if(isEmpty(selectbookroomRow)) {
+        if(selectbookroomRow.length<1) {
             return res.json({
                 isSuccess: false,
                 code: 3000,
@@ -150,19 +140,8 @@ exports.getbookroomPopular = async function (req, res) {
     try {
         const selectbookroomPopular = await bookroomDao.selectbookroomPopular(page,limit)
 
-        // 3. 해당 페이지 요청했을 때 값이 더이상 없는 경우(먼저 비어있는지 확인하는 함수 선언)
-        var isEmpty = function (selectbookroomPopular){
-            if (selectbookroomPopular === "" || selectbookroomPopular === null || selectbookroomPopular === undefined || (selectbookroomPopular !==null && typeof selectbookroomPopular === 'object' && !Object.keys(selectbookroomPopular).length))
-            {
-                return true
-                }
-            else{
-                return false
-            }
-        };
-
         // 3. 해당 페이지 요청했을 때 값이 더이상 없는 경우
-        if(isEmpty(selectbookroomPopular)) {
+        if(selectbookroomPopular.length<1) {
             return res.json({
                 isSuccess: false,
                 code: 3000,
@@ -210,7 +189,7 @@ exports.searchbookroom = async function (req, res) {
             message: "페이지 당 불러올 정보의 개수를 1부터 입력해주세요"
         });
 
-//원하는 값이 안들어올 경우 에러 처리 해주세요
+    //원하는 값이 안들어올 경우 에러 처리 해주세요
     if (!bookName)
         return res.json({
             isSuccess: false,
@@ -221,19 +200,8 @@ exports.searchbookroom = async function (req, res) {
     try {
         const searchbookroomRow = await bookroomDao.searchbookroom(bookName,page,limit)
 
-// 검색했을 때 검색값이 안나오는 경우 validation
-        var isEmpty = function (searchbookroomRow){
-            if (searchbookroomRow === "" || searchbookroomRow === null || searchbookroomRow === undefined || (searchbookroomRow !==null && typeof searchbookroomRow === 'object' && !Object.keys(searchbookroomRow).length))
-            {
-                return true
-            }
-            else{
-                return false
-            }
-        };
-
         // 3. 해당 페이지 요청했을 때 값이 더이상 없는 경우
-        if(isEmpty(searchbookroomRow)) {
+        if(searchbookroomRow.length<1) {
             return res.json({
                 isSuccess: false,
                 code: 3000,
@@ -282,17 +250,8 @@ exports.getbookcontents = async function (req, res) {
             message: "페이지 당 불러올 정보의 개수를 1부터 입력해주세요"
         });
     const checkbookroomIdxRow = await bookroomDao.checkbookroomIdx(bookIdx)
-    var isEmptys = function (checkbookroomIdxRow){
-        if (checkbookroomIdxRow === "" || checkbookroomIdxRow === null || checkbookroomIdxRow === undefined || (checkbookroomIdxRow !==null && typeof checkbookroomIdxRow === 'object' && !Object.keys(checkbookroomIdxRow).length) || checkbookroomIdxRow == '{}')
-        {
-            return true
-        }
-        else{
-            return false
-        }
-    };
 
-    if (isEmptys(checkbookroomIdxRow))
+    if (checkbookroomIdxRow.length<1)
         return res.json({
             isSuccess: false,
             code: 3000,
@@ -346,17 +305,8 @@ exports.getbookcontentsbookmark = async function (req, res) {
         });
 
     const checkbookroomIdxRow = await bookroomDao.checkbookroomIdx(bookIdx)
-    var isEmptys = function (checkbookroomIdxRow){
-        if (checkbookroomIdxRow === "" || checkbookroomIdxRow === null || checkbookroomIdxRow === undefined || (checkbookroomIdxRow !==null && typeof checkbookroomIdxRow === 'object' && !Object.keys(checkbookroomIdxRow).length) || checkbookroomIdxRow == '{}')
-        {
-            return true
-        }
-        else{
-            return false
-        }
-    };
-
-    if (isEmptys(checkbookroomIdxRow))
+ 
+    if (checkbookroomIdxRow.length<1)
         return res.json({
             isSuccess: false,
             code: 3000,
@@ -498,17 +448,7 @@ exports.deletecontents = async function (req, res) {
 
     const checkbookroomIdxRow = await bookroomDao.checkbookroomIdx(bookIdx)
 
-    var isEmptys = function (checkbookroomIdxRow){
-        if (checkbookroomIdxRow === "" || checkbookroomIdxRow === null || checkbookroomIdxRow === undefined || (checkbookroomIdxRow !==null && typeof checkbookroomIdxRow === 'object' && !Object.keys(checkbookroomIdxRow).length) || checkbookroomIdxRow == '{}')
-        {
-            return true
-        }
-        else{
-            return false
-        }
-    };
-
-    if (isEmptys(checkbookroomIdxRow))
+    if (checkbookroomIdxRow.length<1)
         return res.json({
             isSuccess: false,
             code: 3000,
@@ -516,18 +456,8 @@ exports.deletecontents = async function (req, res) {
         });
 
     const checkContentsContentsIdxRow = await bookroomDao.checkContentsContentsIdx(contentsIdx)
-    // 3. 해당 페이지 요청했을 때 값이 더이상 없는 경우(먼저 비어있는지 확인하는 함수 선언)
-    var isEmpty = function (checkContentsContentsIdxRow){
-        if (checkContentsContentsIdxRow === "" || checkContentsContentsIdxRow === null || checkContentsContentsIdxRow === undefined || (checkContentsContentsIdxRow !==null && typeof checkContentsContentsIdxRow === 'object' && !Object.keys(checkContentsContentsIdxRow).length) || checkContentsContentsIdxRow == '{}')
-        {
-            return true
-        }
-        else{
-            return false
-        }
-    };
 
-    if (isEmpty(checkContentsContentsIdxRow))
+    if (checkContentsContentsIdxRow.length<1)
         return res.json({
             isSuccess: false,
             code: 3001,
@@ -681,7 +611,7 @@ exports.postreport = async function (req, res) {
             code: 3004,
             message: "이미 신고를 한 글입니다."
         });
-        //
+        //이미 신고를 했다면 다시 신고 불가 2021-03-30
 
         const checkContentsUserIdxRow = await bookroomDao.checkContentsUserIdx(bookIdx,contentsIdx)
         if (checkContentsUserIdxRow == 0)
@@ -722,25 +652,14 @@ exports.postreport = async function (req, res) {
     }
 };
 
-
 // 글 북마크 설정/해제
 exports. patchContentsbookmark = async function (req, res) {
     const contentsIdx = req.params['contentsIdx'];
     const userIdx = req.verifiedToken.userIdx;
 
     const checkContentsContentsIdxRow = await bookroomDao.checkContentsContentsIdx(contentsIdx)
-    // 3. 해당 페이지 요청했을 때 값이 더이상 없는 경우(먼저 비어있는지 확인하는 함수 선언)
-    var isEmpty = function (checkContentsContentsIdxRow){
-        if (checkContentsContentsIdxRow === "" || checkContentsContentsIdxRow === null || checkContentsContentsIdxRow === undefined || (checkContentsContentsIdxRow !==null && typeof checkContentsContentsIdxRow === 'object' && !Object.keys(checkContentsContentsIdxRow).length) || checkContentsContentsIdxRow == '{}')
-        {
-            return true
-        }
-        else{
-            return false
-        }
-    };
-
-    if (isEmpty(checkContentsContentsIdxRow))
+  
+    if (checkContentsContentsIdxRow.length<1)
         return res.json({
             isSuccess: false,
             code: 3001,
