@@ -459,6 +459,22 @@ async function findBookroom(findBookIdParams) {
 }
 
 
+//이미 신고했는지 체크
+async function checkReport(checkParams) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const checkContentsUserIdxQuery = `
+    
+  select reportIdx from Report where contentsIdx = ? and reportUserIdx = ?
+
+    `;
+  const [checkContentsUserIdxRows] = await connection.query(
+    checkContentsUserIdxQuery,
+    checkParams
+  );
+  connection.release();
+  return checkContentsUserIdxRows;
+}
+
 module.exports = {
   insertbookroom, // 1. 책방 만들기
   selectbookroom, // 2. 책방 리스트 조회 - 최신순
@@ -482,5 +498,6 @@ module.exports = {
   updatebookmark,
   checkPostBookRoom,
   checkBookName,
-  findBookroom
+  findBookroom,
+  checkReport
 };
