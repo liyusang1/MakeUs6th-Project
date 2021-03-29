@@ -42,6 +42,7 @@ exports.postbookroom = async function (req, res) {
 
         const [insertbookroomRow] = await bookroomDao.insertbookroom(bookName,authorName,bookImgUrl,userIdx)
 
+        //책방 idx를 제공함
         const findBookIdParams = [bookName,authorName,bookImgUrl,userIdx];
         const findBookroomRows = await bookroomDao.findBookroom(findBookIdParams)
 
