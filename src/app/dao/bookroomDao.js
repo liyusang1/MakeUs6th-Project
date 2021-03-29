@@ -442,6 +442,23 @@ async function checkBookName(bookName) {
   return checkPostBookRoomRow;
 }
 
+//책방 인덱스 가져오기
+async function findBookroom(findBookIdParams) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const findBookroomQuery = `
+    
+  select bookIdx from Book where bookName=? and authorName=? and bookImgUrl=? and userIdx =?
+
+    `;
+  const [findBookroomRows] = await connection.query(
+    findBookroomQuery,
+    findBookIdParams
+  );
+  connection.release();
+  return findBookroomRows;
+}
+
+
 module.exports = {
   insertbookroom, // 1. 책방 만들기
   selectbookroom, // 2. 책방 리스트 조회 - 최신순
@@ -464,5 +481,6 @@ module.exports = {
   insertbookmark,
   updatebookmark,
   checkPostBookRoom,
-  checkBookName
+  checkBookName,
+  findBookroom
 };

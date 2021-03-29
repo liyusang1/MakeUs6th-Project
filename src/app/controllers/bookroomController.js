@@ -42,12 +42,15 @@ exports.postbookroom = async function (req, res) {
 
         const [insertbookroomRow] = await bookroomDao.insertbookroom(bookName,authorName,bookImgUrl,userIdx)
 
+        const findBookIdParams = [bookName,authorName,bookImgUrl,userIdx];
+        const findBookroomRows = await bookroomDao.findBookroom(findBookIdParams)
 
         if (insertbookroomRow) {
             return res.json({
                 isSuccess: true,
                 code: 1000,
-                message: "책방 개설이 완료되었습니다."
+                message: "책방 개설이 완료되었습니다.",
+                bookIdx:findBookroomRows[0].bookIdx
             });
         }
         return res.json({
