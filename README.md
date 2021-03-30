@@ -10,7 +10,7 @@
 ---
 ## What's Binding
 
-<img src="https://firebasestorage.googleapis.com/v0/b/mangoplate-a1a46.appspot.com/o/%EB%B0%94%EC%9D%B8%EB%94%A9%EC%9D%B4%EB%AF%B8%EC%A7%802.png?alt=media&token=0a6d7b51-9e38-42f0-ade1-3945faa94dbb" >
+<img src="image.png" >
 
 <img src="https://firebasestorage.googleapis.com/v0/b/mangoplate-a1a46.appspot.com/o/4%ED%8C%80_%EB%AD%90%EA%B0%80%EC%9E%88%EC%A1%B0_5%EC%B0%A8%EC%84%B8%EC%85%98_page-0001.jpg?alt=media&token=2b002fc4-5fd8-4cf7-bbbb-330385319da1" >
 
