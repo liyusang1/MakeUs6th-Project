@@ -20,12 +20,12 @@
 
 <img src="https://firebasestorage.googleapis.com/v0/b/mangoplate-a1a46.appspot.com/o/4%ED%8C%80_%EB%AD%90%EA%B0%80%EC%9E%88%EC%A1%B0_5%EC%B0%A8%EC%84%B8%EC%85%98_page-0004.jpg?alt=media&token=887b27ce-bd4e-43b6-82df-637f58567291" >
 
-<img src="screenshot/1.png" width="300px"> <img src="screenshot/2.png" width="300px">
+<img src="screenshot/1.png" width="260px"> <img src="screenshot/2.png" width="260px">
 
-<img src="screenshot/3.png" width="300px"> <img src="screenshot/4.png" width="300px">
-<img src="screenshot/5.png" width="300px"> 
+<img src="screenshot/3.png" width="260px"> <img src="screenshot/4.png" width="260px">
+<img src="screenshot/5.png" width="260px"> 
 
-<img src="screenshot/6.png" width="300px"> <img src="screenshot/7.png" width="300px"> <img src="screenshot/8.png" width="300px">
+<img src="screenshot/6.png" width="260px"> <img src="screenshot/7.png" width="260px"> <img src="screenshot/8.png" width="260px">
 
 ---
 
