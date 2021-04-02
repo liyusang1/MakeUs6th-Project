@@ -427,16 +427,16 @@ async function checkPostBookRoom(userIdx) {
 }
 
 //중복된 책방 검사
-async function checkBookName(bookName) {
+async function checkBookName(checkBookParams) {
   const connection = await pool.getConnection(async (conn) => conn);
   const checkBookNameQuery = `
     
-  select bookIdx from Book where bookName=?
+  select bookIdx from Book where bookName=? and authorName = ?
 
     `;
   const [checkPostBookRoomRow] = await connection.query(
     checkBookNameQuery,
-      bookName
+    checkBookParams
   );
   connection.release();
   return checkPostBookRoomRow;

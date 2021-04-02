@@ -25,7 +25,8 @@ exports.postbookroom = async function (req, res) {
     if (bookName.length > 20 ) return res.json({isSuccess: false, code: 2003, message: "책 이름은 20자 이하로 작성하여야 합니다."});
     if (authorName.length > 20 ) return res.json({isSuccess: false, code: 2004, message: "저자 이름은 20자 이하로 작성하여야 합니다."});
 
-    const checkBookNameRow = await bookroomDao.checkBookName(bookName)
+    const checkBookParams = [bookName,authorName];
+    const checkBookNameRow = await bookroomDao.checkBookName(checkBookParams)
     if(checkBookNameRow.length != 0)
     return res.json({
         isSuccess: false,
