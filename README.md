@@ -68,7 +68,10 @@
 <img src="screenshot/6.png" width="260px"> <img src="screenshot/7.png" width="260px"> <img src="screenshot/8.png" width="260px">
 
 ---
+## 📝 Record
+* 2021 04 05 Ver 1.0 Application 출시
 
+---
 ## :warning: License
 본 템플릿은 MakeUs에 소유권이 있으며 본 자료에 대한 상업적 이용 및 무단 복제,배포 및 변경을 원칙적으로 금지하며 이를 위반할 때에는 형사처벌을 받을 수 있습니다.
 
