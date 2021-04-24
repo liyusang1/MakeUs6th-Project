@@ -10,7 +10,7 @@
 ---
 ## :notebook_with_decorative_cover: What's Binding
 
-:house: [앱 소개 페이지](https://binding.medium.com/binding-%EC%A0%84%EA%B5%AD-%EB%8F%85%EB%A6%BD%EC%84%9C%EC%A0%90-%EB%8F%85%EC%9E%90-%EC%9E%91%EA%B0%80%EB%A5%BC-%EC%9D%B4%EC%96%B4%EC%A3%BC%EB%8A%94-%EC%95%B1-79815d6ebeb3)
+:house: [독립 서점 플랫폼 바인딩](https://binding.medium.com/binding-%EC%A0%84%EA%B5%AD-%EB%8F%85%EB%A6%BD%EC%84%9C%EC%A0%90-%EB%8F%85%EC%9E%90-%EC%9E%91%EA%B0%80%EB%A5%BC-%EC%9D%B4%EC%96%B4%EC%A3%BC%EB%8A%94-%EC%95%B1-79815d6ebeb3)
 
 독립서점은 온갖 종류의 책을 판매하는 대형서점과 다릅니다.    
 책방 주인의 취향이 그대로 반영된, 책에 대한 애정과 공간에 대한 철학이 깃든 곳이기 때문이죠.
