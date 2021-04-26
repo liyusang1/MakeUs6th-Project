@@ -69,7 +69,7 @@
 
 ---
 ## 📝 Record
-* 2021 04 05 Ver 1.0 Application 출시
+* 2021 04 01 Ver 1.0 Application 출시
 
 ---
 ## :warning: License
