@@ -6,7 +6,7 @@
 
 ## :notebook_with_decorative_cover: What's Binding
 
-![바인딩실행이미지](https://user-images.githubusercontent.com/65541248/116780650-fa997f00-aab8-11eb-951f-fafcfe815776.gif)
+<img src ="https://user-images.githubusercontent.com/65541248/116780650-fa997f00-aab8-11eb-951f-fafcfe815776.gif" width="300px">
 
 :house: [독립 서점 플랫폼 바인딩](https://binding.medium.com/binding-%EC%A0%84%EA%B5%AD-%EB%8F%85%EB%A6%BD%EC%84%9C%EC%A0%90-%EB%8F%85%EC%9E%90-%EC%9E%91%EA%B0%80%EB%A5%BC-%EC%9D%B4%EC%96%B4%EC%A3%BC%EB%8A%94-%EC%95%B1-79815d6ebeb3)
 
