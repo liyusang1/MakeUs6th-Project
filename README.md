@@ -3,12 +3,10 @@
 ### 수익형 앱 런칭 동아리 MakeUs에서 Application 런칭 프로젝트에 사용된 백엔드 코드입니다.
 >What's MakeUs ?  👉  https://www.makeus.in
 ---
-## 🛠 Stacks
 
-<img src="https://firebasestorage.googleapis.com/v0/b/mangoplate-a1a46.appspot.com/o/binding%20stacks.jpg?alt=media&token=f8a943c6-9c01-40f5-a423-641ba2449a64">
-
----
 ## :notebook_with_decorative_cover: What's Binding
+
+![바인딩실행이미지](https://user-images.githubusercontent.com/65541248/116780650-fa997f00-aab8-11eb-951f-fafcfe815776.gif)
 
 :house: [독립 서점 플랫폼 바인딩](https://binding.medium.com/binding-%EC%A0%84%EA%B5%AD-%EB%8F%85%EB%A6%BD%EC%84%9C%EC%A0%90-%EB%8F%85%EC%9E%90-%EC%9E%91%EA%B0%80%EB%A5%BC-%EC%9D%B4%EC%96%B4%EC%A3%BC%EB%8A%94-%EC%95%B1-79815d6ebeb3)
 
@@ -68,6 +66,13 @@
 <img src="screenshot/6.png" width="260px"> <img src="screenshot/7.png" width="260px"> <img src="screenshot/8.png" width="260px">
 
 ---
+
+## 🛠 Stacks
+
+<img src="https://firebasestorage.googleapis.com/v0/b/mangoplate-a1a46.appspot.com/o/binding%20stacks.jpg?alt=media&token=f8a943c6-9c01-40f5-a423-641ba2449a64">
+
+---
+
 ## 📝 Record
 * 2021 04 01 Ver 1.0 Application 출시
 
