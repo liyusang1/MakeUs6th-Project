@@ -1,9 +1,9 @@
-const { pool } = require("../../../config/database");
+const {pool} = require("../../../config/database");
 
 //모든 서점 가져오기
 async function getAllBookstoreInfo(pagingParams) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const getAllBookstoreInfoQuery = `
+    const connection = await pool.getConnection(async (conn) => conn);
+    const getAllBookstoreInfoQuery = `
 
   select Bookstore.bookstoreIdx,storeName,location,
   ifnull(storeImageUrl,-1) as storeImgUrl
@@ -21,19 +21,19 @@ async function getAllBookstoreInfo(pagingParams) {
 
                 `;
 
-  const [getAllBookstoreInfoRows] = await connection.query(
-    getAllBookstoreInfoQuery,
-    pagingParams
-  );
-  connection.release();
+    const [getAllBookstoreInfoRows] = await connection.query(
+        getAllBookstoreInfoQuery,
+        pagingParams
+    );
+    connection.release();
 
-  return getAllBookstoreInfoRows;
+    return getAllBookstoreInfoRows;
 }
 
 //특정 서점 가져오기
 async function getSpecificBookstoreInfo(bookstoreInfoParams) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const getSpecificBookstoreInfoQuery = `
+    const connection = await pool.getConnection(async (conn) => conn);
+    const getSpecificBookstoreInfoQuery = `
 
   select Bookstore.bookstoreIdx,storeName,location,
     ifnull(storeImageUrl,-1) as storeImgUrl
@@ -52,37 +52,37 @@ limit ?,?
 
                 `;
 
-  const [getSpecificBookstoreInfoRows] = await connection.query(
-    getSpecificBookstoreInfoQuery,
-    bookstoreInfoParams
-  );
-  connection.release();
+    const [getSpecificBookstoreInfoRows] = await connection.query(
+        getSpecificBookstoreInfoQuery,
+        bookstoreInfoParams
+    );
+    connection.release();
 
-  return getSpecificBookstoreInfoRows;
+    return getSpecificBookstoreInfoRows;
 }
 
 //서점 인덱스 체크
 async function bookstoreIdxCheck(bookstoreIdx) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const bookstoreIdxCheckQuery = `
+    const connection = await pool.getConnection(async (conn) => conn);
+    const bookstoreIdxCheckQuery = `
 
   select bookstoreIdx from Bookstore where bookstoreIdx = ? and status = 1;
 
                 `;
 
-  const [bookstoreIdxCheckRows] = await connection.query(
-    bookstoreIdxCheckQuery,
-    bookstoreIdx
-  );
-  connection.release();
+    const [bookstoreIdxCheckRows] = await connection.query(
+        bookstoreIdxCheckQuery,
+        bookstoreIdx
+    );
+    connection.release();
 
-  return bookstoreIdxCheckRows;
+    return bookstoreIdxCheckRows;
 }
 
 //서점 이미지 가져오기
 async function getBookstoreImages(bookstoreIdx) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const getBookstoreImagesQuery = `
+    const connection = await pool.getConnection(async (conn) => conn);
+    const getBookstoreImagesQuery = `
 
   select imageIdx,imageUrl from BookstoreImage
 
@@ -92,19 +92,19 @@ async function getBookstoreImages(bookstoreIdx) {
 
                 `;
 
-  const [getBookstoreImagesRows] = await connection.query(
-    getBookstoreImagesQuery,
-    bookstoreIdx
-  );
-  connection.release();
+    const [getBookstoreImagesRows] = await connection.query(
+        getBookstoreImagesQuery,
+        bookstoreIdx
+    );
+    connection.release();
 
-  return getBookstoreImagesRows;
+    return getBookstoreImagesRows;
 }
 
 //서점 상세정보 가져오기
 async function getBookstoreDetail(bookstoreDetailParams) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const getBookstoreDetailQuery = `
+    const connection = await pool.getConnection(async (conn) => conn);
+    const getBookstoreDetailQuery = `
 
   select storeName,
        ifnull(location,-1) as location,
@@ -127,57 +127,56 @@ async function getBookstoreDetail(bookstoreDetailParams) {
 
                 `;
 
-  const [getBookstoreDetailRows] = await connection.query(
-    getBookstoreDetailQuery,
-    bookstoreDetailParams
-  );
-  connection.release();
+    const [getBookstoreDetailRows] = await connection.query(
+        getBookstoreDetailQuery,
+        bookstoreDetailParams
+    );
+    connection.release();
 
-  return getBookstoreDetailRows;
+    return getBookstoreDetailRows;
 }
 
 //DB에서 북마크 체크
 async function getBookmarkCheck(bookmarkParams) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const getBookmarkCheckQuery = `
+    const connection = await pool.getConnection(async (conn) => conn);
+    const getBookmarkCheckQuery = `
 
   select status from StoreBookMark where userIdx=? and bookstoreIdx=?;
 
                 `;
 
-  const [getBookmarkCheckRows] = await connection.query(
-    getBookmarkCheckQuery,
-    bookmarkParams
-  );
-  connection.release();
+    const [getBookmarkCheckRows] = await connection.query(
+        getBookmarkCheckQuery,
+        bookmarkParams
+    );
+    connection.release();
 
-  return getBookmarkCheckRows;
+    return getBookmarkCheckRows;
 }
-
 
 //DB에 북마크 새로 생성 쿼리
 async function postBookmark(bookmarkParams) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const postBookmarkQuery = `
+    const connection = await pool.getConnection(async (conn) => conn);
+    const postBookmarkQuery = `
 
   -- 북마크 생성
   insert into StoreBookMark(userIdx,bookstoreIdx,status)
   values (?,?,1);
                 `;
 
-  const [postBookmarkRows] = await connection.query(
-    postBookmarkQuery,
-    bookmarkParams
-  );
-  connection.release();
+    const [postBookmarkRows] = await connection.query(
+        postBookmarkQuery,
+        bookmarkParams
+    );
+    connection.release();
 
-  return postBookmarkRows;
+    return postBookmarkRows;
 }
 
 //북마크 상태 수정 쿼리
 async function patchBookmark(bookmarkParams) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const patchBookmarkQuery = `
+    const connection = await pool.getConnection(async (conn) => conn);
+    const patchBookmarkQuery = `
 
   -- 북마크 상태 수정
   update StoreBookMark
@@ -186,24 +185,22 @@ async function patchBookmark(bookmarkParams) {
 
                 `;
 
-  const [patchBookmarkRows] = await connection.query(
-    patchBookmarkQuery,
-    bookmarkParams
-  );
-  connection.release();
+    const [patchBookmarkRows] = await connection.query(
+        patchBookmarkQuery,
+        bookmarkParams
+    );
+    connection.release();
 
-  return patchBookmarkRows;
+    return patchBookmarkRows;
 }
 
 module.exports = {
-  getAllBookstoreInfo,
-  getSpecificBookstoreInfo,
-  bookstoreIdxCheck,
-  getBookstoreImages,
-  getBookstoreDetail,
-  getBookmarkCheck,
-  postBookmark,
-  patchBookmark
+    getAllBookstoreInfo,
+    getSpecificBookstoreInfo,
+    bookstoreIdxCheck,
+    getBookstoreImages,
+    getBookstoreDetail,
+    getBookmarkCheck,
+    postBookmark,
+    patchBookmark
 };
-
-

@@ -1,25 +1,25 @@
-const { pool } = require("../../../config/database");
+const {pool} = require("../../../config/database");
 
 /** 홈화면 **/
 // 1. 책방 만들기
-async function insertbookroom(bookName,authorName,bookImgUrl,userIdx) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const insertbookroomQuery = `
+async function insertbookroom(bookName, authorName, bookImgUrl, userIdx) {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const insertbookroomQuery = `
     insert into Book(bookName,authorName,bookImgUrl,userIdx)
     values (?,?,?,?);
     `;
-  const insertbookroomParams = [bookName,authorName,bookImgUrl,userIdx];
-  const insertbookroomRow = await connection.query(
-      insertbookroomQuery,
-      insertbookroomParams
-  );
-  connection.release();
-  return insertbookroomRow;
+    const insertbookroomParams = [bookName, authorName, bookImgUrl, userIdx];
+    const insertbookroomRow = await connection.query(
+        insertbookroomQuery,
+        insertbookroomParams
+    );
+    connection.release();
+    return insertbookroomRow;
 }
 // 2. 책방 리스트 조회-최신순
-async function selectbookroom(page,limit) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const selectbookroomQuery = `
+async function selectbookroom(page, limit) {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const selectbookroomQuery = `
     select Book.bookIdx, bookImgUrl, bookName, authorName, concat(ifnull(count(Community.bookIdx),0),'개의 글') as contentsCount
     from Book
            LEFT JOIN Community on Community.bookIdx = Book.bookIdx
@@ -27,19 +27,19 @@ async function selectbookroom(page,limit) {
     order by Book.createdAt desc
       limit ?,?;
     `;
-  const selectbookroomParams = [Number(page),Number(limit)];
-  const selectbookroomRow = await connection.query(
-      selectbookroomQuery,
-      selectbookroomParams
-  );
-  connection.release();
-  return selectbookroomRow;
+    const selectbookroomParams = [Number(page), Number(limit)];
+    const selectbookroomRow = await connection.query(
+        selectbookroomQuery,
+        selectbookroomParams
+    );
+    connection.release();
+    return selectbookroomRow;
 }
 
 // 2. 책방 리스트 조회 - 인기순
-async function selectbookroomPopular(page,limit) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const selectbookroomPopularQuery = `
+async function selectbookroomPopular(page, limit) {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const selectbookroomPopularQuery = `
     select Book.viewCount,Book.bookIdx, bookImgUrl, bookName, authorName, concat(ifnull(count(Community.bookIdx),0),'개의 글') as contentsCount
     from Book
            left JOIN Community on Community.bookIdx = Book.bookIdx
@@ -47,19 +47,19 @@ async function selectbookroomPopular(page,limit) {
     order by Book.viewCount desc
       limit ?,?;
   `;
-  const selectbookroomPopularParams = [Number(page),Number(limit)];
-  const [selectbookroomPopularRow] = await connection.query(
-      selectbookroomPopularQuery,
-      selectbookroomPopularParams
-  );
-  connection.release();
-  return selectbookroomPopularRow;
+    const selectbookroomPopularParams = [Number(page), Number(limit)];
+    const [selectbookroomPopularRow] = await connection.query(
+        selectbookroomPopularQuery,
+        selectbookroomPopularParams
+    );
+    connection.release();
+    return selectbookroomPopularRow;
 }
 
 // 4. 책방검색
-async function searchbookroom(bookName,page,limit) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const searchbookroomQuery = `
+async function searchbookroom(bookName, page, limit) {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const searchbookroomQuery = `
     select Book.bookIdx, bookImgUrl, bookName, authorName, concat(ifnull(count(Community.bookIdx),0),'개의 글') as contentsCount
     from Book
            left JOIN Community on Community.bookIdx = Book.bookIdx
@@ -68,36 +68,34 @@ async function searchbookroom(bookName,page,limit) {
     order by Book.viewCount desc
 limit ?,?;
   `;
-  const searchbookroomParams = [bookName,Number(page),Number(limit)];
-  const [searchbookroomRow] = await connection.query(
-      searchbookroomQuery,
-      searchbookroomParams
-  );
-  connection.release();
-  //console.log(searchbookroomRow);
-  return searchbookroomRow;
+    const searchbookroomParams = [bookName, Number(page), Number(limit)];
+    const [searchbookroomRow] = await connection.query(
+        searchbookroomQuery,
+        searchbookroomParams
+    );
+    connection.release();
+    //console.log(searchbookroomRow);
+    return searchbookroomRow;
 }
 
 //조회 할 때마다 viewCount+1 되는 쿼리
 
 async function updateviewCount(bookIdx) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const updateviewCountQuery =
-      `update Book set viewCount = viewCount +1 where bookIdx = ?;`;
-  const updateviewCountParams = [bookIdx];
-  const updateviewCountRow= await connection.query(
-      updateviewCountQuery,
-      updateviewCountParams
-  );
-  connection.release();
-  return updateviewCountRow;
+    const connection = await pool.getConnection(async (conn) => conn);
+    const updateviewCountQuery = `update Book set viewCount = viewCount +1 where bookIdx = ?;`;
+    const updateviewCountParams = [bookIdx];
+    const updateviewCountRow = await connection.query(
+        updateviewCountQuery,
+        updateviewCountParams
+    );
+    connection.release();
+    return updateviewCountRow;
 }
 
-
 // 6. 글 조회 - 최신순
-async function selectbookcontents(userIdx,bookIdx,page,limit) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const selectbookcontentsQuery = `
+async function selectbookcontents(userIdx, bookIdx, page, limit) {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const selectbookcontentsQuery = `
     select Community.contentsIdx,Users.userIdx, ifnull(userImgUrl,-1) as userImgUrl, nickname, contents,
            CASE
              WHEN TIMESTAMPDIFF(HOUR, Community.createdAt, now()) > 23
@@ -116,35 +114,34 @@ async function selectbookcontents(userIdx,bookIdx,page,limit) {
     order by Community.createdAt desc
     limit ?,?;
     `;
-  const selectbookroomNameQuery = `
+    const selectbookroomNameQuery = `
     select bookName
     from Book
     where bookIdx=?
     `;
 
-  const selectbookcontentsParams = [userIdx,bookIdx,Number(page),Number(limit)];
-  const selectbookroomNameParams = [bookIdx];
-  const [selectbookcontentsRow] = await connection.query(
-      selectbookcontentsQuery,
-      selectbookcontentsParams
-  );
+    const selectbookcontentsParams = [userIdx, bookIdx, Number(page), Number(limit)];
+    const selectbookroomNameParams = [bookIdx];
+    const [selectbookcontentsRow] = await connection.query(
+        selectbookcontentsQuery,
+        selectbookcontentsParams
+    );
 
-  const [selectbookroomNameRow] = await connection.query(
-      selectbookroomNameQuery,
-      selectbookroomNameParams
-  );
-  const selectbookroomCombine = selectbookroomNameRow.concat(selectbookcontentsRow);
-  connection.release();
-  return selectbookroomCombine;
+    const [selectbookroomNameRow] = await connection.query(
+        selectbookroomNameQuery,
+        selectbookroomNameParams
+    );
+    const selectbookroomCombine = selectbookroomNameRow.concat(
+        selectbookcontentsRow
+    );
+    connection.release();
+    return selectbookroomCombine;
 }
 
-
-
-
 // 6. 글 조회 - 북마크순
-async function selectbookcontentsbookmark(userIdx,bookIdx,page,limit) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const selectbookcontentsbookmarkQuery = `
+async function selectbookcontentsbookmark(userIdx, bookIdx, page, limit) {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const selectbookcontentsbookmarkQuery = `
     select distinct Community.contentsIdx,Users.userIdx, ifnull(userImgUrl,-1) as userImgUrl,nickname,contents,ifnull(bookMarkCount,0) as bookMarkCount,
 
                     CASE
@@ -169,129 +166,130 @@ async function selectbookcontentsbookmark(userIdx,bookIdx,page,limit) {
     order by bookMarkCount desc
       limit ?,?;
     `;
-  const selectbookroomNameQuery = `
+    const selectbookroomNameQuery = `
     select bookName
     from Book
     where bookIdx=?
     `;
-  const selectbookcontentsbookmarkParams = [userIdx,bookIdx,Number(page),Number(limit)];
-  const selectbookroomNameParams = [bookIdx];
+    const selectbookcontentsbookmarkParams = [userIdx, bookIdx, Number(page), Number(limit)];
+    const selectbookroomNameParams = [bookIdx];
 
-  const [selectbookcontentsbookmarkRow] = await connection.query(
-      selectbookcontentsbookmarkQuery,
-      selectbookcontentsbookmarkParams
-  );
-  const [selectbookroomNameRow] = await connection.query(
-      selectbookroomNameQuery,
-      selectbookroomNameParams
-  );
-  const selectbookroomCombine = selectbookroomNameRow.concat(selectbookcontentsbookmarkRow);
-  connection.release();
-  return  selectbookroomCombine;
+    const [selectbookcontentsbookmarkRow] = await connection.query(
+        selectbookcontentsbookmarkQuery,
+        selectbookcontentsbookmarkParams
+    );
+    const [selectbookroomNameRow] = await connection.query(
+        selectbookroomNameQuery,
+        selectbookroomNameParams
+    );
+    const selectbookroomCombine = selectbookroomNameRow.concat(
+        selectbookcontentsbookmarkRow
+    );
+    connection.release();
+    return selectbookroomCombine;
 }
 
 // . 글 작성
-async function postcontents(userIdx,bookIdx,contents) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const postcontentsQuery = `
+async function postcontents(userIdx, bookIdx, contents) {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const postcontentsQuery = `
     insert into Community(userIdx,bookIdx,contents)
     values(?,?,?);
     `;
-  const postcontentsParams = [userIdx,bookIdx,contents];
-  const postcontentsRow = await connection.query(
-      postcontentsQuery,
-      postcontentsParams
-  );
-  connection.release();
-  return postcontentsRow;
+    const postcontentsParams = [userIdx, bookIdx, contents];
+    const postcontentsRow = await connection.query(
+        postcontentsQuery,
+        postcontentsParams
+    );
+    connection.release();
+    return postcontentsRow;
 }
 
-// JWT TOKEN에 해당하는 userIdx - Community(userIdx) 체크 select userIdx from Community where userIdx = ? and bookIdx=? and contentsIdx=?;
-async function checkContentsUserIdx(bookIdx,contentsIdx) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const checkContentsUserIdxQuery = `
+// JWT TOKEN에 해당하는 userIdx - Community(userIdx) 체크 select userIdx from Community
+// where userIdx = ? and bookIdx=? and contentsIdx=?;
+async function checkContentsUserIdx(bookIdx, contentsIdx) {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const checkContentsUserIdxQuery = `
     select case when count(userIdx) = 0 then count(userIdx)
                 when count(userIdx) != 0 then userIdx end as userIdx
     from Community where bookIdx=? and contentsIdx=?;
     `;
-  const checkContentsUserIdxParams = [bookIdx,contentsIdx];
-  const [checkContentsUserIdxRow] = await connection.query(
-      checkContentsUserIdxQuery,
-      checkContentsUserIdxParams
-  );
-  connection.release();
+    const checkContentsUserIdxParams = [bookIdx, contentsIdx];
+    const [checkContentsUserIdxRow] = await connection.query(
+        checkContentsUserIdxQuery,
+        checkContentsUserIdxParams
+    );
+    connection.release();
 
-  return checkContentsUserIdxRow[0]['userIdx'];
+    return checkContentsUserIdxRow[0]['userIdx'];
 }
 
 // contentsIdx 콘텐츠 인덱스 번호 데이터 확인
 async function checkContentsContentsIdx(contentsIdx) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const checkContentsContentsIdxQuery = `
+    const connection = await pool.getConnection(async (conn) => conn);
+    const checkContentsContentsIdxQuery = `
     select contentsIdx from Community where contentsIdx=?;
     `;
-  const checkContentsContentsIdxParams = [contentsIdx];
-  const [checkContentsContentsIdxRow] = await connection.query(
-      checkContentsContentsIdxQuery,
-      checkContentsContentsIdxParams
-  );
-  connection.release();
-  return checkContentsContentsIdxRow;
+    const checkContentsContentsIdxParams = [contentsIdx];
+    const [checkContentsContentsIdxRow] = await connection.query(
+        checkContentsContentsIdxQuery,
+        checkContentsContentsIdxParams
+    );
+    connection.release();
+    return checkContentsContentsIdxRow;
 }
 // bookIdx 콘텐츠 인덱스 번호 데이터 확인
 async function checkbookroomIdx(bookIdx) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const checkbookroomIdxQuery = `
+    const connection = await pool.getConnection(async (conn) => conn);
+    const checkbookroomIdxQuery = `
     select bookIdx from Book where Book.bookIdx=?;
     `;
-  const checkbookroomIdxParams = [bookIdx];
-  const [checkbookroomIdxRow] = await connection.query(
-      checkbookroomIdxQuery,
-      checkbookroomIdxParams
-  );
-  connection.release();
-  return checkbookroomIdxRow;
+    const checkbookroomIdxParams = [bookIdx];
+    const [checkbookroomIdxRow] = await connection.query(
+        checkbookroomIdxQuery,
+        checkbookroomIdxParams
+    );
+    connection.release();
+    return checkbookroomIdxRow;
 }
 
-
 // . 글 수정
-async function updatecontents(contents,userIdx,bookIdx,contentsIdx) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const updatecontentsQuery = `
+async function updatecontents(contents, userIdx, bookIdx, contentsIdx) {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const updatecontentsQuery = `
     update Community
     set contents=?
     where userIdx =? and bookIdx =? and contentsIdx=?;
     `;
-  const updatecontentsParams = [contents,userIdx,bookIdx,contentsIdx];
-  const updatecontentsRow = await connection.query(
-      updatecontentsQuery,
-      updatecontentsParams
-  );
-  connection.release();
-  return updatecontentsRow;
+    const updatecontentsParams = [contents, userIdx, bookIdx, contentsIdx];
+    const updatecontentsRow = await connection.query(
+        updatecontentsQuery,
+        updatecontentsParams
+    );
+    connection.release();
+    return updatecontentsRow;
 }
 
-
 // . 글 삭제
-async function deletecontents(userIdx,bookIdx,contentsIdx) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const deletecontentsQuery = `
+async function deletecontents(userIdx, bookIdx, contentsIdx) {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const deletecontentsQuery = `
     delete from Community
     where userIdx =? and bookIdx = ?  and contentsIdx=?;
     `;
-  const deletecontentsParams = [userIdx,bookIdx,contentsIdx];
-  const deletecontentsRow = await connection.query(
-      deletecontentsQuery,
-      deletecontentsParams
-  );
-  connection.release();
-  return deletecontentsRow;
+    const deletecontentsParams = [userIdx, bookIdx, contentsIdx];
+    const deletecontentsRow = await connection.query(
+        deletecontentsQuery,
+        deletecontentsParams
+    );
+    connection.release();
+    return deletecontentsRow;
 }
 
 // . 본문 검색 - 내용
-async function searchcontents(bookIdx,contents,page,limit) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const searchcontentsQuery = `
+async function searchcontents(bookIdx, contents, page, limit) {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const searchcontentsQuery = `
     select bookIdx,contentsIdx, Community.userIdx,ifnull(userimgUrl,-1), nickname,
            date_format(Community.createdAt,'%Y.%m.%d') as createdAt, contents
     from Community
@@ -300,204 +298,207 @@ async function searchcontents(bookIdx,contents,page,limit) {
     limit ?,?;
     `;
 
-  const searchcontentsParams = [bookIdx,contents,Number(page),Number(limit)];
-  const [searchcontentsRow] = await connection.query(
-      searchcontentsQuery,
-      searchcontentsParams
-  );
-  connection.release();
-  return searchcontentsRow;
+    const searchcontentsParams = [bookIdx, contents, Number(page), Number(limit)];
+    const [searchcontentsRow] = await connection.query(
+        searchcontentsQuery,
+        searchcontentsParams
+    );
+    connection.release();
+    return searchcontentsRow;
 }
 
 // . 본문 검색 - 내용 - Validation Check
-async function checkContents(bookIdx,contents) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const checkContentsQuery = `
+async function checkContents(bookIdx, contents) {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const checkContentsQuery = `
     select exists( select contentsIdx, bookIdx, Community.userIdx, contents
                    from Community
                           inner join Users on Users.userIdx = Community.userIdx
                    where bookIdx=? and contents like concat('%',?,'%')) as checkcontents
     `;
 
-  const checkContentsParams = [bookIdx,contents];
-  const [checkContentsRow] = await connection.query(
-      checkContentsQuery,
-      checkContentsParams
-  );
-  connection.release();
-  return checkContentsRow[0]['checkcontents'];
+    const checkContentsParams = [bookIdx, contents];
+    const [checkContentsRow] = await connection.query(
+        checkContentsQuery,
+        checkContentsParams
+    );
+    connection.release();
+    return checkContentsRow[0]['checkcontents'];
 }
 
 // . 글 신고하기 new!
-async function insertreport(contentsIdx,reportUserIdx,targetUserIdx,reportReason) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const insertreportQuery = `
+async function insertreport(
+    contentsIdx,
+    reportUserIdx,
+    targetUserIdx,
+    reportReason
+) {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const insertreportQuery = `
     insert into Report(contentsIdx,reportUserIdx,targetUserIdx,reportReason)
     values (?,?,?,?);
     `;
-  const insertreportParams = [contentsIdx,reportUserIdx,targetUserIdx,reportReason];
-  const insertreportRow = await connection.query(
-      insertreportQuery,
-      insertreportParams
-  );
-  connection.release();
-  return insertreportRow;
+    const insertreportParams = [contentsIdx, reportUserIdx, targetUserIdx, reportReason];
+    const insertreportRow = await connection.query(
+        insertreportQuery,
+        insertreportParams
+    );
+    connection.release();
+    return insertreportRow;
 }
 
 // . 글 신고하기 select targetUserIdx
-async function getTargetUserIdx(bookIdx,contentsIdx) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const getTargetUserIdxQuery = `
+async function getTargetUserIdx(bookIdx, contentsIdx) {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const getTargetUserIdxQuery = `
     select userIdx from Community where bookIdx=? and contentsIdx=?;
     `;
-  const getTargetUserIdxParams = [bookIdx,contentsIdx];
-  const [getTargetUserIdxRow] = await connection.query(
-      getTargetUserIdxQuery,
-      getTargetUserIdxParams
-  );
-  connection.release();
-  return getTargetUserIdxRow[0]['userIdx'];
+    const getTargetUserIdxParams = [bookIdx, contentsIdx];
+    const [getTargetUserIdxRow] = await connection.query(
+        getTargetUserIdxQuery,
+        getTargetUserIdxParams
+    );
+    connection.release();
+    return getTargetUserIdxRow[0]['userIdx'];
 }
 
-
 // 글 북마크가 등록 되어 있는지 체크 쿼리 GET
-async function checkbookmark(userIdx,contentsIdx) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const checkbookmarkQuery = `
+async function checkbookmark(userIdx, contentsIdx) {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const checkbookmarkQuery = `
     select status from CommunityBookMark where userIdx=? and contentsIdx=?;
     `;
-  const checkbookmarkParams = [userIdx,contentsIdx];
-  const checkbookmarkRow = await connection.query(
-      checkbookmarkQuery,
-      checkbookmarkParams
-  );
-  connection.release();
-  return checkbookmarkRow;
+    const checkbookmarkParams = [userIdx, contentsIdx];
+    const checkbookmarkRow = await connection.query(
+        checkbookmarkQuery,
+        checkbookmarkParams
+    );
+    connection.release();
+    return checkbookmarkRow;
 }
 
 //1. X => 글 북마크 설정 쿼리 POST
-async function insertbookmark(userIdx,contentsIdx) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const insertbookmarkQuery = `
+async function insertbookmark(userIdx, contentsIdx) {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const insertbookmarkQuery = `
     insert into CommunityBookMark(userIdx,contentsIdx)
 values (?,?);
     `;
-  const insertbookmarkParams = [userIdx,contentsIdx];
-  const insertbookmarkRow = await connection.query(
-      insertbookmarkQuery,
-      insertbookmarkParams
-  );
-  connection.release();
-  return insertbookmarkRow;
+    const insertbookmarkParams = [userIdx, contentsIdx];
+    const insertbookmarkRow = await connection.query(
+        insertbookmarkQuery,
+        insertbookmarkParams
+    );
+    connection.release();
+    return insertbookmarkRow;
 }
 
 // 2.O=> 글 북마크 상태 변경 쿼리 PATCH
 
-async function updatebookmark(userIdx,contentsIdx) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const updatebookmarkQuery = `
+async function updatebookmark(userIdx, contentsIdx) {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const updatebookmarkQuery = `
     update CommunityBookMark
 set status= if(status =1,0,1)
 where userIdx =? and contentsIdx=?;
     `;
-  const updatebookmarkParams = [userIdx,contentsIdx];
-  const updatebookmarkRow = await connection.query(
-      updatebookmarkQuery,
-      updatebookmarkParams
-  );
-  connection.release();
-  return updatebookmarkRow;
+    const updatebookmarkParams = [userIdx, contentsIdx];
+    const updatebookmarkRow = await connection.query(
+        updatebookmarkQuery,
+        updatebookmarkParams
+    );
+    connection.release();
+    return updatebookmarkRow;
 }
 
 // 하루에 ^다섯개 이상^ 책방 만들기 금지
 async function checkPostBookRoom(userIdx) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const checkPostBookRoomQuery = `
+    const connection = await pool.getConnection(async (conn) => conn);
+    const checkPostBookRoomQuery = `
     select count(createdAt)
     from Book
     where userIdx=? and createdAt > curdate();
     `;
-  const checkPostBookRoomParams = [userIdx];
-  const [checkPostBookRoomRow] = await connection.query(
-      checkPostBookRoomQuery,
-      checkPostBookRoomParams
-  );
-  connection.release();
-  return checkPostBookRoomRow[0]['count(createdAt)'];
+    const checkPostBookRoomParams = [userIdx];
+    const [checkPostBookRoomRow] = await connection.query(
+        checkPostBookRoomQuery,
+        checkPostBookRoomParams
+    );
+    connection.release();
+    return checkPostBookRoomRow[0]['count(createdAt)'];
 }
 
 //중복된 책방 검사
 async function checkBookName(checkBookParams) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const checkBookNameQuery = `
+    const connection = await pool.getConnection(async (conn) => conn);
+    const checkBookNameQuery = `
     
   select bookIdx from Book where bookName=? and authorName = ?
 
     `;
-  const [checkPostBookRoomRow] = await connection.query(
-    checkBookNameQuery,
-    checkBookParams
-  );
-  connection.release();
-  return checkPostBookRoomRow;
+    const [checkPostBookRoomRow] = await connection.query(
+        checkBookNameQuery,
+        checkBookParams
+    );
+    connection.release();
+    return checkPostBookRoomRow;
 }
 
 //책방 인덱스 가져오기
 async function findBookroom(findBookIdParams) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const findBookroomQuery = `
+    const connection = await pool.getConnection(async (conn) => conn);
+    const findBookroomQuery = `
     
   select bookIdx from Book where bookName=? and authorName=? and bookImgUrl=? and userIdx =?
 
     `;
-  const [findBookroomRows] = await connection.query(
-    findBookroomQuery,
-    findBookIdParams
-  );
-  connection.release();
-  return findBookroomRows;
+    const [findBookroomRows] = await connection.query(
+        findBookroomQuery,
+        findBookIdParams
+    );
+    connection.release();
+    return findBookroomRows;
 }
-
 
 //이미 신고했는지 체크
 async function checkReport(checkParams) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const checkContentsUserIdxQuery = `
+    const connection = await pool.getConnection(async (conn) => conn);
+    const checkContentsUserIdxQuery = `
     
   select reportIdx from Report where contentsIdx = ? and reportUserIdx = ?
 
     `;
-  const [checkContentsUserIdxRows] = await connection.query(
-    checkContentsUserIdxQuery,
-    checkParams
-  );
-  connection.release();
-  return checkContentsUserIdxRows;
+    const [checkContentsUserIdxRows] = await connection.query(
+        checkContentsUserIdxQuery,
+        checkParams
+    );
+    connection.release();
+    return checkContentsUserIdxRows;
 }
 
 module.exports = {
-  insertbookroom, // 1. 책방 만들기
-  selectbookroom, // 2. 책방 리스트 조회 - 최신순
-  selectbookroomPopular, // 3. 책방 리스트 조회 - 인기순
-  searchbookroom, // 4. 책방 검색
-  selectbookcontents, // 6. 글 조회 - 최신순
-  selectbookcontentsbookmark, // . 글 조회 - 북마크순
-  updatecontents, // 글 수정
-  deletecontents, // 글 삭제
-  searchcontents, // 본문 내용 검색
-  checkContents, // 본문 내용 검색 - Validation check
-  updateviewCount, //글 조회 하면 viewCount +1 되는 dao
-  postcontents, // 글 작성
-  checkContentsUserIdx, //contents userIdx 체크
-  checkContentsContentsIdx, // contentsIdx 체크
-  checkbookroomIdx, //bookIdx 체크
-  insertreport, //신고하기
-  getTargetUserIdx,
-  checkbookmark,
-  insertbookmark,
-  updatebookmark,
-  checkPostBookRoom,
-  checkBookName,
-  findBookroom,
-  checkReport
+    insertbookroom, // 1. 책방 만들기
+    selectbookroom, // 2. 책방 리스트 조회 - 최신순
+    selectbookroomPopular, // 3. 책방 리스트 조회 - 인기순
+    searchbookroom, // 4. 책방 검색
+    selectbookcontents, // 6. 글 조회 - 최신순
+    selectbookcontentsbookmark, // . 글 조회 - 북마크순
+    updatecontents, // 글 수정
+    deletecontents, // 글 삭제
+    searchcontents, // 본문 내용 검색
+    checkContents, // 본문 내용 검색 - Validation check
+    updateviewCount, //글 조회 하면 viewCount +1 되는 dao
+    postcontents, // 글 작성
+    checkContentsUserIdx, //contents userIdx 체크
+    checkContentsContentsIdx, // contentsIdx 체크
+    checkbookroomIdx, //bookIdx 체크
+    insertreport, //신고하기
+    getTargetUserIdx,
+    checkbookmark,
+    insertbookmark,
+    updatebookmark,
+    checkPostBookRoom,
+    checkBookName,
+    findBookroom,
+    checkReport
 };
