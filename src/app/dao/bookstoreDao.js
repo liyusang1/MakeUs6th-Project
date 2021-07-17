@@ -5,21 +5,23 @@ async function getAllBookstoreInfo(pagingParams) {
     const connection = await pool.getConnection(async (conn) => conn);
     const getAllBookstoreInfoQuery = `
 
-  select Bookstore.bookstoreIdx,storeName,location,
-  ifnull(storeImageUrl,-1) as storeImgUrl
+        select Bookstore.bookstoreIdx,
+               storeName,
+               location,
+               ifnull(storeImageUrl, -1) as storeImgUrl
 
-     from Bookstore
-     left outer join (select BookstoreImage.bookstoreIdx,imageUrl as storeImageUrl
-                      from BookstoreImage
-                            inner join (select bookstoreIdx, min(imageIdx) as firstImageId
-                                           from BookstoreImage
-                                                group by bookstoreIdx) firstImage
-                                       on BookstoreImage.imageIdx = firstImage.firstImageId where BookstoreImage.status = 1) bookStoreImages
-                      on Bookstore.bookstoreIdx = bookStoreImages.bookstoreIdx
-  where Bookstore.status=1                    
-  limit ?,?
+        from Bookstore
+                 left outer join (select BookstoreImage.bookstoreIdx, imageUrl as storeImageUrl
+                                  from BookstoreImage
+                                           inner join (select bookstoreIdx, min(imageIdx) as firstImageId
+                                                       from BookstoreImage
+                                                       group by bookstoreIdx) firstImage
+                                                      on BookstoreImage.imageIdx = firstImage.firstImageId
+                                  where BookstoreImage.status = 1) bookStoreImages
+                                 on Bookstore.bookstoreIdx = bookStoreImages.bookstoreIdx
+        where Bookstore.status = 1 limit ?,?
 
-                `;
+    `;
 
     const [getAllBookstoreInfoRows] = await connection.query(
         getAllBookstoreInfoQuery,
@@ -35,22 +37,25 @@ async function getSpecificBookstoreInfo(bookstoreInfoParams) {
     const connection = await pool.getConnection(async (conn) => conn);
     const getSpecificBookstoreInfoQuery = `
 
-  select Bookstore.bookstoreIdx,storeName,location,
-    ifnull(storeImageUrl,-1) as storeImgUrl
+        select Bookstore.bookstoreIdx,
+               storeName,
+               location,
+               ifnull(storeImageUrl, -1) as storeImgUrl
 
-       from Bookstore
-       left outer join (select BookstoreImage.bookstoreIdx,imageUrl as storeImageUrl
-                        from BookstoreImage
-                              inner join (select bookstoreIdx, min(imageIdx) as firstImageId
-                                             from BookstoreImage
-                                                  group by bookstoreIdx) firstImage
-                                         on BookstoreImage.imageIdx = firstImage.firstImageId where BookstoreImage.status = 1) bookStoreImages
-                        on Bookstore.bookstoreIdx = bookStoreImages.bookstoreIdx
+        from Bookstore
+                 left outer join (select BookstoreImage.bookstoreIdx, imageUrl as storeImageUrl
+                                  from BookstoreImage
+                                           inner join (select bookstoreIdx, min(imageIdx) as firstImageId
+                                                       from BookstoreImage
+                                                       group by bookstoreIdx) firstImage
+                                                      on BookstoreImage.imageIdx = firstImage.firstImageId
+                                  where BookstoreImage.status = 1) bookStoreImages
+                                 on Bookstore.bookstoreIdx = bookStoreImages.bookstoreIdx
 
-where SUBSTRING_INDEX(SUBSTRING_INDEX(Bookstore.location, " ", 2), " ", -1) in (?) and Bookstore.status = 1
-limit ?,?
+        where SUBSTRING_INDEX(SUBSTRING_INDEX(Bookstore.location, " ", 2), " ", -1) in (?)
+          and Bookstore.status = 1 limit ?,?
 
-                `;
+    `;
 
     const [getSpecificBookstoreInfoRows] = await connection.query(
         getSpecificBookstoreInfoQuery,
@@ -66,9 +71,12 @@ async function bookstoreIdxCheck(bookstoreIdx) {
     const connection = await pool.getConnection(async (conn) => conn);
     const bookstoreIdxCheckQuery = `
 
-  select bookstoreIdx from Bookstore where bookstoreIdx = ? and status = 1;
+        select bookstoreIdx
+        from Bookstore
+        where bookstoreIdx = ?
+          and status = 1;
 
-                `;
+    `;
 
     const [bookstoreIdxCheckRows] = await connection.query(
         bookstoreIdxCheckQuery,
@@ -84,13 +92,15 @@ async function getBookstoreImages(bookstoreIdx) {
     const connection = await pool.getConnection(async (conn) => conn);
     const getBookstoreImagesQuery = `
 
-  select imageIdx,imageUrl from BookstoreImage
+        select imageIdx, imageUrl
+        from BookstoreImage
 
-  -- 서점전체리스트와 중복된 사진이 처음에 안나오도록 정렬기준 변경
-  where bookstoreIdx = ? and status =1
-  order by imageIdx desc;
+             -- 서점전체리스트와 중복된 사진이 처음에 안나오도록 정렬기준 변경
+        where bookstoreIdx = ?
+          and status = 1
+        order by imageIdx desc;
 
-                `;
+    `;
 
     const [getBookstoreImagesRows] = await connection.query(
         getBookstoreImagesQuery,
@@ -106,26 +116,30 @@ async function getBookstoreDetail(bookstoreDetailParams) {
     const connection = await pool.getConnection(async (conn) => conn);
     const getBookstoreDetailQuery = `
 
-  select storeName,
-       ifnull(location,-1) as location,
+        select storeName,
+               ifnull(location, -1)    as location,
 
-       ifnull(isBookMark,0) as isBookMark,
+               ifnull(isBookMark, 0)   as isBookMark,
 
-       ifnull(storeTime,-1) as storeTime,
-       ifnull(siteAddress,-1) as siteAddress,
-       ifnull(phoneNumber,-1) as phoneNumber,
-       ifnull(storeInfo,-1) as storeInfo
+               ifnull(storeTime, -1)   as storeTime,
+               ifnull(siteAddress, -1) as siteAddress,
+               ifnull(phoneNumber, -1) as phoneNumber,
+               ifnull(storeInfo, -1)   as storeInfo
 
-  from Bookstore
+        from Bookstore
 
-  -- 북마크 관련 쿼리
-  left outer join (select storemarkIdx,StoreBookMark.bookstoreIdx, count(*) as isBookMark from StoreBookMark where userIdx = ? and status = 1
-        group by storemarkIdx) BookMark
-        on Bookstore.bookstoreIdx = BookMark.bookstoreIdx
+                 -- 북마크 관련 쿼리
+                 left outer join (select storemarkIdx, StoreBookMark.bookstoreIdx, count(*) as isBookMark
+                                  from StoreBookMark
+                                  where userIdx = ?
+                                    and status = 1
+                                  group by storemarkIdx) BookMark
+                                 on Bookstore.bookstoreIdx = BookMark.bookstoreIdx
 
-  where Bookstore.bookstoreIdx = ? and status =1;
+        where Bookstore.bookstoreIdx = ?
+          and status = 1;
 
-                `;
+    `;
 
     const [getBookstoreDetailRows] = await connection.query(
         getBookstoreDetailQuery,
@@ -141,9 +155,12 @@ async function getBookmarkCheck(bookmarkParams) {
     const connection = await pool.getConnection(async (conn) => conn);
     const getBookmarkCheckQuery = `
 
-  select status from StoreBookMark where userIdx=? and bookstoreIdx=?;
+        select status
+        from StoreBookMark
+        where userIdx = ?
+          and bookstoreIdx = ?;
 
-                `;
+    `;
 
     const [getBookmarkCheckRows] = await connection.query(
         getBookmarkCheckQuery,
