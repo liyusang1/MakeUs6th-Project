@@ -1,7 +1,7 @@
 # :iphone: MakeUs 6기 APP 런칭 프로젝트
 
 ### 수익형 앱 런칭 동아리 MakeUs에서 Application 런칭 프로젝트에 사용된 백엔드 코드입니다.
->What's MakeUs ?  👉  https://www.makeus.in
+>What's MakeUs ?  👉  [https://www.makeus.in](https://cmc.makeus.in/)
 ---
 
 ## :notebook_with_decorative_cover: What's Binding
